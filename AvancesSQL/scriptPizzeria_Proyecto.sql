@@ -72,6 +72,26 @@ create table ingrediente_pizzaCatalog(
     on delete cascade
     on update cascade,
     foreign key (id_ingrediente) references ingredientes(id_ingrediente)
+    on delete cascade
+    on update cascade
 );
 
+create table cupones(
+	id_cupon int primary key auto_increment,
+	fecha_emision datetime not null,
+    usos int not null,
+    fecha_fin datetime not null,
+    fecha_emision datetime null -- a la mejor en promocion el cupon pero está guardado
+);
 
+create table cupones_pedidos(
+	id_cuponePed int primary key auto_increment,
+    id_cupon int not null,
+    id_pedido int not null,
+    foreign key (id_cupon) references cupones(id_cupon)
+    on delete cascade
+    on update cascade,
+    foreign key (id_pedido) references pedidos(id_pedido)
+    on delete cascade
+    on update cascade
+);
