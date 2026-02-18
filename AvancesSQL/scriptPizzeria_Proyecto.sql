@@ -59,8 +59,8 @@ create table empleados(
 create table pedidos(
 	id_pedido int primary key auto_increment,
     metodo_pago enum("Efectivo", "Tarjeta") not null,
-    total double(8,2) not null,
-    totalDCTO double(8,2) null,
+    total double not null,
+    totalDCTO double null,
     tipo varchar(60) null,
     estado enum("Listo","No reclamado", "Entregado", "Cancelado", "En preparacion")  not null default "En preparacion",
     fechaHora_entrega datetime null,
@@ -117,13 +117,13 @@ create table pizzas(
 	nombre varchar(100) not null,
     tamaño enum("Chica","Grande","Mediana") not null,
     descripcion varchar(250) not null,
-    precio double(8,2) not null,
+    precio double not null,
     estado enum("Disponible", "No disponible") not null default "Disponible"
 );
 
 create table detallesPizzas(
 	id int primary key auto_increment,
-    costo double(8,2) not null,
+    costo double not null,
     cantidad int not null,
 	notas varchar(500) null,
     id_pizza int not null,
