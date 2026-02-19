@@ -51,7 +51,6 @@ create table telefonos_clientes(
 create table empleados(
 	id_usuario int primary key,
     telefono varchar(10) not null,
-    rol enum("Cocinero", "Cajero") not null,
     foreign key (id_usuario) references usuarios(id_usuario)
     on delete cascade
     on update cascade
@@ -63,7 +62,7 @@ create table pedidos(
     total double not null,
     totalDCTO double null,
     tipo varchar(60) null,
-    estado enum("Listo","No reclamado", "Entregado", "Cancelado", "En preparacion", "En espera")  not null default "En espera",
+    estado enum("Listo","No reclamado", "Entregado", "Cancelado", "Pendiente", "No entregado") not null default "Pendiente",
     fechaHora_entrega datetime null,
     fechaHora_elaboracion datetime not null,
     id_usuario int null,
@@ -104,8 +103,8 @@ create table pedidos_programados(
 create table historial_cambios_estado_pedidos(
 	id int primary key auto_increment,
     id_pedido int not null,
-    estado_anterior enum("Listo","No reclamado", "Entregado", "Cancelado", "En preparacion", "En espera") not null,
-    estado_actual enum("Listo","No reclamado", "Entregado", "Cancelado", "En preparacion", "En espera") null,
+    estado_anterior enum("Listo","No reclamado", "Entregado", "Cancelado", "Pendiente", "No entregado") not null,
+    estado_actual enum("Listo","No reclamado", "Entregado", "Cancelado", "Pendiente", "No entregado") null,
     fechaHora_actualizacion datetime null,
     foreign key (id_pedido) references pedidos(id_pedido)
     on delete cascade
@@ -129,24 +128,6 @@ create table detallesPizzas(
 	notas varchar(500) null,
     id_pizza int not null,
     foreign key (id_pizza) references pizzas(id_pizza)
-    on delete cascade
-    on update cascade
-);
-
-create table ingredientes(
-	id_ingrediente int primary key auto_increment,
-    descripcion varchar(200) not null,
-    nombre varchar(200) not null
-);
-
-create table ingredientes_pizzas(
-	id int primary key auto_increment,
-    id_pizza int not null,
-    id_ingrediente int null,
-    foreign key (id_pizza) references pizzas(id_pizza)
-    on delete cascade
-    on update cascade,
-    foreign key (id_ingrediente) references ingredientes(id_ingrediente)
     on delete cascade
     on update cascade
 );
