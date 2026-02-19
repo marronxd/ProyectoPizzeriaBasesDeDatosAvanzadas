@@ -56,13 +56,14 @@ create table empleados(
     on delete cascade
     on update cascade
 );
+
 create table pedidos(
 	id_pedido int primary key auto_increment,
     metodo_pago enum("Efectivo", "Tarjeta") not null,
     total double not null,
     totalDCTO double null,
     tipo varchar(60) null,
-    estado enum("Listo","No reclamado", "Entregado", "Cancelado", "En preparacion")  not null default "En preparacion",
+    estado enum("Listo","No reclamado", "Entregado", "Cancelado", "En preparacion", "En espera")  not null default "En espera",
     fechaHora_entrega datetime null,
     fechaHora_elaboracion datetime not null,
     id_usuario int null,
@@ -103,8 +104,8 @@ create table pedidos_programados(
 create table historial_cambios_estado_pedidos(
 	id int primary key auto_increment,
     id_pedido int not null,
-    estado_anterior enum("Listo","No reclamado", "Entregado", "Cancelado", "En preparacion") not null,
-    estado_actual enum("Listo","No reclamado", "Entregado", "Cancelado", "En preparacion") null,
+    estado_anterior enum("Listo","No reclamado", "Entregado", "Cancelado", "En preparacion", "En espera") not null,
+    estado_actual enum("Listo","No reclamado", "Entregado", "Cancelado", "En preparacion", "En espera") null,
     fechaHora_actualizacion datetime null,
     foreign key (id_pedido) references pedidos(id_pedido)
     on delete cascade
