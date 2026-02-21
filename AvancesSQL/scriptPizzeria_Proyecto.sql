@@ -33,15 +33,12 @@ create table clientes(
     estado enum("activo", "inactivo") default "activo",
     correo varchar(150) not null,
     fecha_nacimiento datetime not null,
-    foreign key (id_usuario) references usuarios(id_usuario)
-    on delete cascade
-    on update cascade
 );
 
 create table telefonos_clientes(
 	id_telefono int primary key,
     id_usuario int not null,
-    telefono varchar(10) not null,
+    numero varchar(10) not null,
     etiqueta varchar(100) not null,
     foreign key (id_usuario) references clientes(id_usuario)
 	on delete cascade
