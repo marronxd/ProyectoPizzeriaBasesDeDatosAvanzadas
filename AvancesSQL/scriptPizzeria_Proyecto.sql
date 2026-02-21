@@ -21,7 +21,11 @@ create table domicilios_clientes (
     calle varchar(100) not null,
     numero varchar(30) not null,
     colonia varchar(150) not null,
-    codigo_postal varchar(40) not null
+    codigo_postal varchar(40) not null,
+	id_cliente int null,
+	foreign key (id_cliente) references clientes(id_cliente)
+	on delete cascade
+    on update cascade
 );
 
 create table clientes(
@@ -29,10 +33,6 @@ create table clientes(
     estado enum("activo", "inactivo") default "activo",
     correo varchar(150) not null,
     fecha_nacimiento datetime not null,
-    id_domicilio int null, -- Llave foranea de domicilios
-    foreign key (id_domicilio) references domicilios_clientes (id_domicilio)
-    on delete cascade
-    on update cascade,
     foreign key (id_usuario) references usuarios(id_usuario)
     on delete cascade
     on update cascade
