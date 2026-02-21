@@ -115,7 +115,6 @@ create table historial_cambios_estado_pedidos(
 create table pizzas(
 	id_pizza int primary key auto_increment,
 	nombre varchar(100) not null,
-    tamaño enum("Chica","Grande","Mediana") not null,
     descripcion varchar(250) not null,
     precio double not null,
     estado enum("Disponible", "No disponible") not null default "Disponible"
@@ -127,6 +126,7 @@ create table detallesPizzas(
     cantidad int not null,
 	notas varchar(500) null,
     id_pizza int not null,
+	tamaño enum("Chica","Grande","Mediana") not null
     foreign key (id_pizza) references pizzas(id_pizza)
     on delete cascade
     on update cascade
