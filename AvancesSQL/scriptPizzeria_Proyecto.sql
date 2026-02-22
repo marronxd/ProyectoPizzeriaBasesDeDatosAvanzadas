@@ -28,10 +28,6 @@ create table clientes(
     estado enum("activo", "inactivo") default "activo",
     correo varchar(150) not null,
     fecha_nacimiento date not null,
-    id_domicilio int null, -- Llave foranea de domicilios
-    foreign key (id_domicilio) references domicilios_clientes (id_domicilio)
-    on delete cascade
-    on update cascade,
     foreign key (id_usuario) references usuarios(id_usuario)
     on delete cascade
     on update cascade
