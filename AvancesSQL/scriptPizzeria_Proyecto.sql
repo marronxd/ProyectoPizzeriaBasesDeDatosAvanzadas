@@ -27,7 +27,7 @@ create table clientes(
 	id_usuario int primary key,
     estado enum("activo", "inactivo") default "activo",
     correo varchar(150) not null,
-    fecha_nacimiento datetime not null,
+    fecha_nacimiento date not null,
     id_domicilio int null, -- Llave foranea de domicilios
     foreign key (id_domicilio) references domicilios_clientes (id_domicilio)
     on delete cascade
@@ -62,8 +62,8 @@ create table pedidos(
     totalDCTO double null,
     tipo varchar(60) null,
     estado enum("Listo","No reclamado", "Entregado", "Cancelado", "Pendiente", "No entregado") not null default "Pendiente",
-    fechaHora_entrega datetime null,
-    fechaHora_elaboracion datetime not null,
+    fechaHora_entrega date null,
+    fechaHora_elaboracion date not null,
     id_usuario int null,
     foreign key (id_usuario) references clientes(id_usuario)
     on delete cascade
@@ -82,8 +82,8 @@ create table pedidos_express(
 create table cupones(
 	id_cupon int primary key auto_increment,
     limite_usos int null,
-    fecha_caducidad datetime null,
-    fecha_emision datetime null,
+    fecha_caducidad date null,
+    fecha_emision date null,
 	codigo varchar(50) unique not null
 );
 
@@ -104,7 +104,7 @@ create table historial_cambios_estado_pedidos(
     id_pedido int not null,
     estado_anterior enum("Listo","No reclamado", "Entregado", "Cancelado", "Pendiente", "No entregado") not null,
     estado_actual enum("Listo","No reclamado", "Entregado", "Cancelado", "Pendiente", "No entregado") null,
-    fechaHora_actualizacion datetime null,
+    fechaHora_actualizacion date null,
     foreign key (id_pedido) references pedidos(id_pedido)
     on delete cascade
     on update cascade
