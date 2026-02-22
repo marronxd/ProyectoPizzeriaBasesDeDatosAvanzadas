@@ -7,11 +7,11 @@ delimiter $$
 create procedure SP_crear_registro_cliente_completo(
 
 	-- Usuario
-	IN u_nombre varchar(70), 
-	IN u_contraseña varchar(60), 
 	IN u_nombres varchar(70), 
 	IN u_apellidoP varchar(40), 
 	IN u_apellidoM varchar(40),
+	IN u_nombreUsuario varchar(70), 
+	IN u_contraseña varchar(60), 
 	-- Cliente
 	IN c_fecha_nacimiento datetime, 
     IN c_correo varchar(100),
@@ -42,8 +42,8 @@ begin
 	start transaction;
 
 	-- Agregar un usuario nuevo
-	insert into usuarios(nombreUsuario, contraseña, edad, tipo, nombres, apellido_paterno, apellido_materno)
-	values(u_nombre, u_contraseña, u_edad, u_nombres, u_apellidoP, u_apellidoM);
+	insert into usuarios(nombreUsuario, contraseña, tipo, nombres, apellido_paterno, apellido_materno)
+	values(u_nombreUsuario, u_contraseña, u_nombres, u_apellidoP, u_apellidoM);
 	-- dar valor del nuevo registro
 	set v_id_usuario = last_insert_id();
 
