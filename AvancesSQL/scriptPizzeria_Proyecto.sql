@@ -9,7 +9,6 @@ create table usuarios(
 	id_usuario int primary key auto_increment,
     nombreUsuario varchar(100) not null,
     contraseña varchar(100) not null,
-    edad int not null,
     tipo enum("cliente", "empleado") not null,
     nombres varchar(80) not null,
     apellido_paterno varchar(60) not null,
