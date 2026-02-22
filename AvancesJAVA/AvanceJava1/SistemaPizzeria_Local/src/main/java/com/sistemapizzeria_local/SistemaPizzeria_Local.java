@@ -2,13 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  */
 
-package com.mycompany.sistemapizzeria;
+package com.sistemapizzeria_local;
 
 /**
  *
- * @author aaron
+ * @author Andre
  */
-public class SistemaPizzeria {
+public class SistemaPizzeria_Local {
 
     public static void main(String[] args) {
         System.out.println("Hello World!");

@@ -21,7 +21,11 @@ create table domicilios_clientes (
     calle varchar(100) not null,
     numero varchar(30) not null,
     colonia varchar(150) not null,
-    codigo_postal varchar(40) not null
+    codigo_postal varchar(40) not null,
+	id_cliente int null,
+	foreign key (id_cliente) references clientes(id_cliente)
+	on delete cascade
+    on update cascade
 );
 
 create table clientes(
@@ -29,19 +33,12 @@ create table clientes(
     estado enum("activo", "inactivo") default "activo",
     correo varchar(150) not null,
     fecha_nacimiento datetime not null,
-    id_domicilio int null, -- Llave foranea de domicilios
-    foreign key (id_domicilio) references domicilios_clientes (id_domicilio)
-    on delete cascade
-    on update cascade,
-    foreign key (id_usuario) references usuarios(id_usuario)
-    on delete cascade
-    on update cascade
 );
 
 create table telefonos_clientes(
 	id_telefono int primary key,
     id_usuario int not null,
-    telefono varchar(10) not null,
+    numero varchar(10) not null,
     etiqueta varchar(100) not null,
     foreign key (id_usuario) references clientes(id_usuario)
 	on delete cascade
@@ -115,7 +112,6 @@ create table historial_cambios_estado_pedidos(
 create table pizzas(
 	id_pizza int primary key auto_increment,
 	nombre varchar(100) not null,
-    tamaño enum("Chica","Grande","Mediana") not null,
     descripcion varchar(250) not null,
     precio double not null,
     estado enum("Disponible", "No disponible") not null default "Disponible"
@@ -127,6 +123,7 @@ create table detallesPizzas(
     cantidad int not null,
 	notas varchar(500) null,
     id_pizza int not null,
+	tamaño enum("Chica","Grande","Mediana") not null
     foreign key (id_pizza) references pizzas(id_pizza)
     on delete cascade
     on update cascade
