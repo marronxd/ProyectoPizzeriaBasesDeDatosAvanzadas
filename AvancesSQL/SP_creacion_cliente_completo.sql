@@ -21,7 +21,7 @@ create procedure SP_crear_registro_cliente_completo(
     IN d_colonia varchar(100), 
     IN d_cp varchar(40),
     -- Telefono
-	IN tc_telefono varchar(10), 
+	IN tc_numero varchar(10), 
     IN tc_etiqueta varchar(100),
     -- salida
     out o_id_usuario int
@@ -54,12 +54,12 @@ begin
 	set v_id_domicilio = last_insert_id();
 
 	-- agregar un cliente nuevo asociado a ese usuario
-	insert into cliente (correo, fecha_nacimiento, id_domicilio)
-	values (c_correo, c_fecha_nacimiento, v_id_domicilio);
+	insert into cliente (correo, fecha_nacimiento, id_domicilio, estado)
+	values (c_correo, c_fecha_nacimiento, v_id_domicilio, );
 
 	-- agregar telefono
-	insert into telefonos_clientes(id_usuario, telefono, etiqueta)
-	values(v_id_usuario, tc_telefono, tc_etiqueta);
+	insert into telefonos_clientes(id_usuario, numero, etiqueta)
+	values(v_id_usuario, tc_numero , tc_etiqueta);
 
 	commit ;
     
