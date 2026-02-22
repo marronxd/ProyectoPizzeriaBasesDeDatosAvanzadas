@@ -14,7 +14,7 @@ create procedure SP_crear_registro_cliente_completo(
 	IN u_contraseña varchar(60), 
 	-- Cliente
     IN c_correo varchar(100),
-	IN c_fecha_nacimiento datetime, 
+	IN c_fecha_nacimiento date, 
     -- Domicilio
 	IN d_calle varchar(70),	
 	IN d_numero varchar(30), 
