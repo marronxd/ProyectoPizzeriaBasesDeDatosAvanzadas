@@ -81,6 +81,7 @@ create table cupones(
     limite_usos int null,
     fecha_caducidad date null,
     fecha_emision date null,
+	descuento double not null,
 	codigo varchar(50) unique not null
 );
 
