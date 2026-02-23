@@ -1,5 +1,6 @@
 -- Trigger modificador de los estados de los pedidos
 -- modifica el registro del historial
+drop trigger if exists registros_cambios_estados;
 delimiter //
 
 create trigger registros_cambios_estados
@@ -22,3 +23,6 @@ begin -- empieza
 end //
 
 delimiter ;
+
+
+SHOW TRIGGERS WHERE `Table` = 'pedidos';
