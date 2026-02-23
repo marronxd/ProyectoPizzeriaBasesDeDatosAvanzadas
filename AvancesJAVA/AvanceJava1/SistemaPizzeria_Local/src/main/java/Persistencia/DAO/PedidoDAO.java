@@ -69,7 +69,10 @@ public class PedidoDAO implements IPedidoDAO{
     }
     @Override
     public void generarPedido(Pedido pedido) throws PersistenciaException{
-        
+        String comandoSQL1 = """
+                            
+                            """;
+        //iniciar conexion sql
     }
     @Override
     public Pedido consultarPedido(Integer id) throws PersistenciaException{
