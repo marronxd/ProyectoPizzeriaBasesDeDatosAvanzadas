@@ -50,21 +50,6 @@ public abstract class Usuario {
         this.tipo = tipo;
     }
     
-    //constructor sin tipo
-    public Usuario(String nombres, String apellidoPaterno, String apellidoMaterno, String contrasenia) {
-        this.nombres = nombres;
-        this.apellidoPaterno = apellidoPaterno;
-        this.apellidoMaterno = apellidoMaterno;
-        this.contrasenia = contrasenia;
-    }
-    public Usuario(Integer idUsuario, String nombres, String apellidoPaterno, String apellidoMaterno, String contrasenia) {
-        this.idUsuario = idUsuario;
-        this.nombres = nombres;
-        this.apellidoPaterno = apellidoPaterno;
-        this.apellidoMaterno = apellidoMaterno;
-        this.contrasenia = contrasenia;
-    }
-    
     /**
      * Constructor vacío
      */

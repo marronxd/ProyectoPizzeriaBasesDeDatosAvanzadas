@@ -9,10 +9,9 @@ import java.sql.SQLException;
 public class ConexionBD implements IConexionBD{
     
     //Declara los datos para conectar a la base de datos
-    private final String CADENA_CONEXION = "jdbc:mysql://localhost:3306/pizzeria";
+    private final String CADENA_CONEXION = "jdbc:mysql://localhost:3306/soporte";
     private final String USUARIO = "root";
-    private final String CONTRASENIA = "Kayden";
-
+    private final String CONTRASENIA = "admin";
     
     /**
      * Establece la conexión independiente de los métodos DAO

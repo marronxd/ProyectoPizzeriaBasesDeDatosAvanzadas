@@ -8,7 +8,6 @@ public class DetallesPizza {
     
     //Declara los atributos
     private Integer idDetallesPizza;
-    private Integer idPedido;
     private double costo;
     private int cantidad;
     private String notas;
@@ -25,10 +24,6 @@ public class DetallesPizza {
      * @param notas
      * @param tamanio 
      */
-    public DetallesPizza(Integer idDetallesPizza, Integer idPedido, double costo, int cantidad, String notas, String tamanio) {
-        this.idDetallesPizza = idDetallesPizza;
-        this.idPedido = idPedido;
-    }
     public DetallesPizza(Integer idDetallesPizza, double costo, int cantidad, String notas, String tamanio) {
         this.idDetallesPizza = idDetallesPizza;
         this.costo = costo;
@@ -44,26 +39,18 @@ public class DetallesPizza {
      * @param notas
      * @param tamanio 
      */
-
     public DetallesPizza(double costo, int cantidad, String notas, String tamanio) {
         this.costo = costo;
         this.cantidad = cantidad;
         this.notas = notas;
         this.tamanio = tamanio;
     }
-
-    public Integer getIdPedido() {
-        return idPedido;
-    }
+    
     /**
      * Constructor vacío
      */
     public DetallesPizza() {
         
-    }
-
-    public void setIdPedido(Integer idPedido) {
-        this.idPedido = idPedido;
     }
     
     
@@ -98,12 +85,4 @@ public class DetallesPizza {
     } public void setTamanio(String tamanio) {
         this.tamanio = tamanio;
     }  
-
-    @Override
-    public String toString() {
-        return "DetallesPizza{" + "idDetallesPizza=" + idDetallesPizza + ", costo=" + costo + ", cantidad=" + cantidad + ", notas=" + notas + ", tamanio=" + tamanio + '}';
-    }
-    
-    
-    
 }
