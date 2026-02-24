@@ -5,6 +5,13 @@
         <group>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/holaBro/src/holabro/HolaBro.java</file>
             <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/holaBro/src/holabro/RegistroUsuario.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/holaBro/src/holabro/PedidosCliente.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/holaBro/src/holabro/MenuPizza.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/holaBro/src/holabro/PizzaDetallado.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/holaBro/src/holabro/Carrito.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/holaBro/src/holabro/ConfirmarPedido.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/holaBro/src/holabro/PedidoConfirmado.java</file>
+            <file>file:/C:/Users/Usuario/Documents/NetBeansProjects/holaBro/src/holabro/CanjearCupon.java</file>
         </group>
     </open-files>
 </project-private>
