@@ -5,7 +5,10 @@
 package holabro;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -16,114 +19,96 @@ import javax.swing.JTextField;
  *
  * @author Usuario
  */
-public class PedidosCliente {
-
+public class PedidosCliente extends JPanel {
+    private static int pedidos = 0;
     
-    public static void main(String[] args) {
-    JFrame jf = new JFrame("Registro de usuario");
-    JPanel jp = new JPanel();
-    jf.setSize(1920, 1080); 
-    jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    jf.setResizable(false);
-    jf.add(jp);
-
-    try {
+    private VentanaPrincipal ventana;
+    
+    public PedidosCliente(VentanaPrincipal ventana){
+        pedidos = 0;
+        this.ventana = ventana;
+        this.setLayout(null);
+        this.setBackground(new Color(0, 102, 180));
+        this.setBounds(0,0,1920,1080);
         
-            JPanel fondo = new JPanel();
-            fondo.setLayout(null);
-            fondo.setBackground(new Color(0, 102, 180));
-            jf.setContentPane(fondo);
-            
-            JPanel cuadro = new JPanel();
-            cuadro.setLayout(null);
-            cuadro.setBackground(new Color(2, 128, 205));
-            cuadro.setBounds(100, 100, 1720, 800);
-            
-            JLabel nombre = new JLabel("PEDIDOS");
-            nombre.setFont(new Font("Arial", Font.BOLD, 80));
-            nombre.setBounds(140, 110, 400, 80);
-            nombre.setForeground(Color.WHITE);
-            
-            JPanel filaPedido = new JPanel();
-            filaPedido.setLayout(null);
-            filaPedido.setBackground(new Color(0, 76, 153));
-            filaPedido.setBounds(150, 250, 1400, 100);
-            
-            JLabel pedido = new JLabel("Pedido 1");
-            pedido.setFont(new Font("Arial", Font.BOLD, 50));
-            pedido.setBounds(30, 10, 400, 80);
-            pedido.setForeground(Color.WHITE);
-            
-            JLabel fecha = new JLabel("15/02/26");
-            fecha.setFont(new Font("Arial", Font.BOLD, 30));
-            fecha.setBounds(1200, 10, 400, 80);
-            fecha.setForeground(Color.WHITE);
-            
-            JLabel salir = new JLabel("Salir");
-            salir.setFont(new Font("Arial", Font.BOLD, 40));
-            salir.setBounds(50, 940, 400, 80);
-            salir.setForeground(Color.WHITE);
-            
-            JPanel filaPedido2 = new JPanel();
-            filaPedido2.setLayout(null);
-            filaPedido2.setBackground(new Color(0, 76, 153));
-            filaPedido2.setBounds(150, 360, 1400, 100);
-            
-            JLabel pedido2 = new JLabel("Pedido 2");
-            pedido2.setFont(new Font("Arial", Font.BOLD, 50));
-            pedido2.setBounds(30, 10, 400, 80);
-            pedido2.setForeground(Color.WHITE);
-            
-            JLabel fecha2 = new JLabel("15/02/26");
-            fecha2.setFont(new Font("Arial", Font.BOLD, 30));
-            fecha2.setBounds(1200, 10, 400, 80);
-            fecha2.setForeground(Color.WHITE);
-            
-            JPanel filaPedido3 = new JPanel();
-            filaPedido3.setLayout(null);
-            filaPedido3.setBackground(new Color(0, 76, 153));
-            filaPedido3.setBounds(150, 470, 1400, 100);
-            
-            JLabel pedido3 = new JLabel("Pedido 3");
-            pedido3.setFont(new Font("Arial", Font.BOLD, 50));
-            pedido3.setBounds(30, 10, 400, 80);
-            pedido3.setForeground(Color.WHITE);
-            
-            JLabel fecha3 = new JLabel("15/02/26");
-            fecha3.setFont(new Font("Arial", Font.BOLD, 30));
-            fecha3.setBounds(1200, 10, 400, 80);
-            fecha3.setForeground(Color.WHITE);
-           
-            fondo.add(cuadro);
-            fondo.add(salir);
-            cuadro.add(nombre);
-            filaPedido.add(pedido);
-            filaPedido.add(fecha);
-            filaPedido2.add(pedido2);
-            filaPedido2.add(fecha2);
-            filaPedido3.add(fecha3);
-            filaPedido3.add(pedido3);
-            cuadro.add(filaPedido);
-            cuadro.add(filaPedido2);
-            cuadro.add(filaPedido3);
-            
-            
-            JButton realizarPedido = new JButton("Realizar pedido");
-            realizarPedido.setFont(new Font("Arial", Font.BOLD, 50));
-            realizarPedido.setBounds(1050, 75, 600, 120);
-            realizarPedido.setBackground(new Color(2, 128, 205));
-            realizarPedido.setForeground(Color.WHITE);
-            realizarPedido.setFocusPainted(false);
-            cuadro.add(realizarPedido);
-            
+        JPanel cuadro = new JPanel();
+        cuadro.setLayout(null);
+        cuadro.setBackground(new Color(2, 128, 205));
+        cuadro.setBounds(100, 100, 1720, 800);
 
-    } catch (Exception e) {
-        e.printStackTrace();
+        JLabel nombre = new JLabel("PEDIDOS");
+        nombre.setFont(new Font("Arial", Font.BOLD, 80));
+        nombre.setBounds(140, 110, 400, 80);
+        nombre.setForeground(Color.WHITE);
+
+        JPanel filaPedido = new JPanel();
+        filaPedido.setLayout(null);
+        filaPedido.setBackground(new Color(0, 76, 153));
+        filaPedido.setBounds(150, 250, 1400, 100);
+
+
+        JLabel salir = new JLabel("Salir");
+        salir.setFont(new Font("Arial", Font.BOLD, 40));
+        salir.setBounds(50, 940, 400, 80);
+        salir.setForeground(Color.WHITE);
+        
+        salir.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            ventana.mostrarPantalla(new InicioPrograma(ventana)); }});
+        this.add(salir);
+        
+        JPanel listaPedidos = new JPanel();
+        listaPedidos.setLayout(null);
+        listaPedidos.setBackground(new Color(2, 128, 205));
+        listaPedidos.setBounds(140, 200, 1450, 500);
+        listaPedidos.setPreferredSize(new Dimension(1400, 1000));
+        
+        
+        agregarPedido(listaPedidos, "aaron", "12/12/12");
+        
+        cuadro.add(listaPedidos);
+        this.add(cuadro);
+        this.add(salir);
+        cuadro.add(nombre);
+
+        JButton realizarPedido = new JButton("Realizar pedido");
+        realizarPedido.setFont(new Font("Arial", Font.BOLD, 50));
+        realizarPedido.setBounds(1050, 75, 600, 120);
+        realizarPedido.setBackground(new Color(2, 128, 205));
+        realizarPedido.setForeground(Color.WHITE);
+        realizarPedido.setFocusPainted(false);
+        // realizarPedido.addActionListener(e -> { ventana.mostrarPantalla(new MenuPizza(ventana));});
+        cuadro.add(realizarPedido);
+
     }
     
-   
-    jf.setVisible(true);
+    private static void agregarPedido(JPanel contenedor, String cliente, String fecha) {
+        JPanel fila = new JPanel();
+        fila.setLayout(null);
+        fila.setBackground(new Color(0, 76, 153));
 
+        int y = pedidos * 110; 
+        fila.setBounds(0, y, 1400, 100);
+
+        JLabel lblNom = new JLabel(cliente);
+        lblNom.setFont(new Font("arial", Font.BOLD, 50));
+        lblNom.setForeground(Color.WHITE);
+        lblNom.setBounds(30, 10, 600, 80);
+        fila.add(lblNom);
+
+        JLabel lblFec = new JLabel(fecha);
+        lblFec.setFont(new Font("arial", Font.BOLD, 30));
+        lblFec.setForeground(Color.WHITE);
+        lblFec.setBounds(1150, 10, 200, 80);
+        fila.add(lblFec);
+
+        contenedor.add(fila);
+        pedidos++;
+
+        if (y + 110 > contenedor.getPreferredSize().height) {
+            contenedor.setPreferredSize(new Dimension(1400, y + 200));
+        }
     }
     
 }
