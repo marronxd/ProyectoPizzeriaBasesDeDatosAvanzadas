@@ -10,17 +10,17 @@ create table usuarios(
     nombreUsuario varchar(100) not null,
     contraseña varchar(100) not null,
     tipo enum("cliente", "empleado") not null,
-    nombres varchar(80) not null,
-    apellido_paterno varchar(60) not null,
-    apellido_materno varchar(60) null
+    nombres varchar(100) not null,
+    apellido_paterno varchar(100) not null,
+    apellido_materno varchar(100) null
 );
 
 create table domicilios_clientes (
 	id_domicilio int primary key auto_increment,
     calle varchar(100) not null,
-    numero varchar(30) not null,
-    colonia varchar(150) not null,
-    codigo_postal varchar(40) not null,
+    numero varchar(100) not null,
+    colonia varchar(100) not null,
+    codigo_postal varchar(5) not null,
 	id_cliente int null,
 	foreign key (id_cliente) references clientes(id_cliente)
 	on delete cascade
@@ -30,7 +30,7 @@ create table domicilios_clientes (
 create table clientes(
 	id_usuario int primary key,
     estado enum("activo", "inactivo") default "activo",
-    correo varchar(150) not null,
+    correo varchar(100) not null,
     fecha_nacimiento date not null,
 );
 
@@ -57,7 +57,7 @@ create table pedidos(
     metodo_pago enum("Efectivo", "Tarjeta") not null,
     total double not null,
     totalDCTO double null,
-    tipo varchar(60) null,
+    tipo enum("Programado", "Express"),
     estado enum("Listo","No reclamado", "Entregado", "Cancelado", "Pendiente", "No entregado") not null default "Pendiente",
     fechaHora_entrega date null,
     fechaHora_elaboracion date not null,
@@ -121,11 +121,10 @@ create table detallesPizzas(
 	id int primary key auto_increment,
     costo double not null,
     cantidad int not null,
-	notas varchar(500) null,
+	notas varchar(1000) null,
     id_pizza int not null,
 	tamaño enum("Chica","Grande","Mediana") not null
     foreign key (id_pizza) references pizzas(id_pizza)
     on delete cascade
     on update cascade
 );
-
