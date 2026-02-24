@@ -4,7 +4,11 @@
  */
 package Persistencia.DAO;
 
+import Negocio.DTO.DetallePizzaNuevoDTO;
+import Persistencia.Dominio.DetallesPizza;
 import Persistencia.Dominio.Pedido;
+import java.util.ArrayList;
+import java.util.List;
 import persistencia.excepciones.PersistenciaException;
 
 /**
@@ -23,18 +27,11 @@ public interface IPedidoDAO {
     public void cambiarEstado(Integer id, String pedido) throws PersistenciaException;
     
     /**
-     * Metodo para generar un pedido, recibe un pedido no registrado
-     * @param pedido es el pedido que recibe para crearse en la base de datos
-     * @throws SQLException 
-     */
-    public void generarPedido(Pedido pedido) throws PersistenciaException;
-    
-    /**
      * Metodo para consultar pedido
      * @param pedido
      * @throws PersistenciaException 
      */
     public Pedido consultarPedido(Integer pedido) throws PersistenciaException;
     
-    
+    public void registrarPedidoCompleto(Pedido pedido, List<DetallesPizza> detallesPizza)throws PersistenciaException;
 }

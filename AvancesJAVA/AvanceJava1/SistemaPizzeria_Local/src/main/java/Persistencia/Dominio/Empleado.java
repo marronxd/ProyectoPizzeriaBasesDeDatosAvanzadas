@@ -8,7 +8,7 @@ package Persistencia.Dominio;
  * Representa al empleado en el sistema
  * @author aaron
  */
-public class Empleado extends Usuario{
+public class Empleado{
     
     //Definir atributos caracteristicos
     private String telefono;
@@ -16,12 +16,12 @@ public class Empleado extends Usuario{
     // Constructores
     //sin id
     public Empleado(String nombres, String apellidoPaterno, String apellidoMaterno, String contrasenia, String telefono){
-        super(nombres, apellidoPaterno, apellidoMaterno, contrasenia);
+        //super(nombres, apellidoPaterno, apellidoMaterno, contrasenia);
         this.telefono = telefono;
     }
     //con id
     public Empleado(Integer idUsuario,String apellidoPaterno, String apellidoMaterno, String contrasenia, String telefono){
-        super(idUsuario, telefono, apellidoPaterno, apellidoMaterno, contrasenia);
+        //super(idUsuario, telefono, apellidoPaterno, apellidoMaterno, contrasenia);
         this.telefono = telefono;
     }
     //constructor sin atributos

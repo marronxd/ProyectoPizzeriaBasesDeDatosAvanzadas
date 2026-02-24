@@ -5,6 +5,7 @@
 package Persistencia.DAO;
 
 import Persistencia.Conexion.IConexionBD;
+import Persistencia.Dominio.DetallesPizza;
 import Persistencia.Dominio.Pedido;
 import com.mysql.cj.protocol.Resultset;
 import java.sql.Connection;
@@ -13,82 +14,125 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import persistencia.excepciones.PersistenciaException;
 
 /**
- * Logica de acceso a la base de datos
- * Su unica funcion es establecer la conexion con la base de datos,
- * inyecta scripts SQL y no almacena logica
+ * Logica de acceso a la base de datos Su unica funcion es establecer la
+ * conexion con la base de datos, inyecta scripts SQL y no almacena logica
+ *
  * @author aaron
  */
-public class PedidoDAO implements IPedidoDAO{
-    
+public class PedidoDAO implements IPedidoDAO {
+
     /**
-     * Componente que inicializa la conexion con la base de datos
-     * Al hacerlo por constructor, se reduce el acoplamiento entre capas
+     * Componente que inicializa la conexion con la base de datos Al hacerlo por
+     * constructor, se reduce el acoplamiento entre capas
      */
     private final IConexionBD conexionBD;
-    
-    
+
     /**
      * Logger para registrar información relevante durante operaciones de
      * persistencia.
      */
     private static final Logger LOG = Logger.getLogger(PedidoDAO.class.getName());
-    
+
     /**
      * Constructor que inicializa la dependencia con la bd
-     * @param conexionBD  componente que se conexta con la bd
+     *
+     * @param conexionBD componente que se conexta con la bd
      */
-    public PedidoDAO(IConexionBD conexionBD){
+    public PedidoDAO(IConexionBD conexionBD) {
         this.conexionBD = conexionBD;
     }
+
     @Override
-    public void cambiarEstado(Integer id, String estado) throws PersistenciaException{
+    public void cambiarEstado(Integer id, String estado) throws PersistenciaException {
         String comandoSQL = """
                             update pedidos set estado = ? where id_pedido = ? and estado not in ('Entregado', 'Cancelado');
                             """;
-        
-        try(Connection conexion = conexionBD.crearConexion(); PreparedStatement ps = conexion.prepareStatement(comandoSQL) ){
+
+        try (Connection conexion = conexionBD.crearConexion(); PreparedStatement ps = conexion.prepareStatement(comandoSQL)) {
             // reemplazar los signos de interrogacion por datos reales
             ps.setString(1, estado);
             ps.setInt(2, id);
-            
+
             // dejar validaciones pendientes
-            
-            
             int filasCambiadas = ps.executeUpdate();
-            if(filasCambiadas == 0){
+            if (filasCambiadas == 0) {
                 LOG.warning("El pedido no se encontró.");
                 throw new PersistenciaException("Pedido no registrado.");
             }
-        }catch(SQLException ex){
+        } catch (SQLException ex) {
             throw new PersistenciaException(ex.getMessage());
         }
     }
+    
     @Override
-    public void generarPedido(Pedido pedido) throws PersistenciaException{
-        String comandoSQL1 = """
-                            
-                            """;
-        //iniciar conexion sql
-    }
-    @Override
-    public Pedido consultarPedido(Integer id) throws PersistenciaException{
+    public void registrarPedidoCompleto(Pedido pedido, List<DetallesPizza> detallePizza)throws PersistenciaException{
         String comandoSQL = """
-                            select metodo_pago, total, totalDCTO, tipo, estado, fechaHora_entrega, fechaHora_elaboracion, id_usuario
-                            from pedidos where id_pedido = ?;
-                            """;
+                        insert into pedidos (metodo_pago, total, totalDCTO, id_usuario)
+                        values(?, ?, ?, ?)
+                        """;
+        // 2. SQL para la tabla hija (Programados)
+        String SQLProgramado = "insert into pedidos_programados (id_pedido, id_cupon) values(?, ?)";
+        String SQLDetalles = """
+                             insert into detallesPizzas (id_pedido, costo, cantidad, tamaño, notas, id_pizza) 
+                             values(?, ?, ?, ?, ?, ?)
+                             """;
         // establecer la conexion a sql
-        try(Connection conexion = this.conexionBD.crearConexion(); PreparedStatement ps = conexion.prepareStatement(comandoSQL)){
-            ps.setInt(1, id);
-            ResultSet  rs =  ps.executeQuery();
+        try (Connection conexion = this.conexionBD.crearConexion(); PreparedStatement psP = conexion.prepareStatement(comandoSQL, Statement.RETURN_GENERATED_KEYS)){
+            // mapeo creo pero ahora para mandar los datos para la creacion de pedido
+            psP.setString(1, pedido.getMetodo_pago());
+            psP.setDouble(2, pedido.getTotal());
             
-            if(rs.next()){
-                // creacion de instancia
-                Pedido  pedido = new Pedido();
+            psP.setDouble(3, 0.0);
+            psP.setInt(4, (int) pedido.getIdUsuario());
+            
+            psP.executeUpdate();
+            ResultSet rs = psP.getGeneratedKeys();
+            int idPedidoGenerado = 0;
+            if (rs.next()) {
+                idPedidoGenerado = rs.getInt(1);
+            }
+            // Segunda conexion
+            try(PreparedStatement psD = conexion.prepareStatement(SQLDetalles)){
+                for (DetallesPizza detP : detallePizza){
+                    psD.setInt(1, idPedidoGenerado);
+                    psD.setDouble(2, detP.getCosto());
+                    psD.setInt(3, (int) detP.getCantidad());
+                    psD.setString(4, detP.getTamanio());
+                    psD.setString(5, detP.getNotas());
+                    psD.setInt(6, (int) detP.getId_pizza());
+                    psD.executeUpdate();
+                   
+                }
                 
+            }
+        
+        }catch(SQLException ex){
+            LOG.warning(ex.getMessage());
+            throw new PersistenciaException(ex.getMessage());
+        }    
+    }
+
+    @Override
+    public Pedido consultarPedido (Integer id) throws PersistenciaException{
+        String comandoSQL = """
+                        select metodo_pago, total, totalDCTO, tipo, estado, fechaHora_entrega, fechaHora_elaboracion, id_usuario
+                        from pedidos where id_pedido = ?;
+                        """;
+        // establecer la conexion a sql
+        try (Connection conexion = this.conexionBD.crearConexion(); PreparedStatement ps = conexion.prepareStatement(comandoSQL)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                // creacion de instancia
+                Pedido pedido = new Pedido();
+
                 pedido.setIdPedido(id);
                 // Extraer valores simples
                 pedido.setMetodo_pago(rs.getString(1)); // metodo pago
@@ -109,12 +153,12 @@ public class PedidoDAO implements IPedidoDAO{
 
                 pedido.setIdUsuario(rs.getInt(8));
                 return pedido;
-            } 
+            }
             return null;
         } catch (SQLException ex) {
             LOG.warning("Error al consultar pedido: " + ex.getMessage());
             throw new PersistenciaException("Error al consultar pedido: " + ex.getMessage());
         }
+       
     }
-    
-}
+} 
