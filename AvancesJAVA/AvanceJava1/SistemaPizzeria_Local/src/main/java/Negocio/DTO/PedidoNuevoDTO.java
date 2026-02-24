@@ -5,6 +5,8 @@
 package Negocio.DTO;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Representa un pedido nuevo que no esta registrado en el ssitema
@@ -19,18 +21,32 @@ public class PedidoNuevoDTO {
     //private LocalDate fechaHora_entrega;
     //private LocalDate fechaHora_elaboracion;
     private Integer idUsuario;
+    private List<DetallePizzaNuevoDTO> listaDetallesPizza;
+    
+    //opcional para en caso de que sea pedidoProgramado
+    private String idCupon;
 
-    /**
-     * Constructor que crea un usuario no registrado
-     * @param metodo_pago
-     * @param idUsuario 
-     */
-    public PedidoNuevoDTO(String metodo_pago, String tipo, Integer id) {
+    public PedidoNuevoDTO(String metodo_pago, String tipo, Integer idUsuario, List<DetallePizzaNuevoDTO> listaDetallesPizza, String idCupon) {
         this.metodo_pago = metodo_pago;
         this.tipo = tipo;
-        this.idUsuario = id;
-      
+        this.idUsuario = idUsuario;
+        this.listaDetallesPizza = listaDetallesPizza;
+        this.idCupon = idCupon;
     }
+
+    
+    
+    public List<DetallePizzaNuevoDTO> getListaDetallesPizza() {
+        return listaDetallesPizza;
+    }
+
+    public void setListaDetallesPizza(List<DetallePizzaNuevoDTO> listaDetallesPizza) {
+        this.listaDetallesPizza = listaDetallesPizza;
+    }
+    
+    public PedidoNuevoDTO() {
+    }
+    
 
     public String getMetodo_pago() {
         return metodo_pago;
@@ -41,9 +57,6 @@ public class PedidoNuevoDTO {
         this.metodo_pago = metodo_pago;
     }
 
-    public String getTipo() {
-        return tipo;
-    }
 
     public Integer getIdUsuario() {
         return idUsuario;
@@ -51,12 +64,26 @@ public class PedidoNuevoDTO {
 
     @Override
     public String toString() {
-        return "PedidoNuevoDTO{" + "metodo_pago=" + metodo_pago + ", tipo=" + tipo + ", idUsuario=" + idUsuario + '}';
+        return "PedidoNuevoDTO{" + "metodo_pago=" + metodo_pago + ", tipo=" + tipo + ", idUsuario=" + idUsuario + ", listaDetallesPizza=" + listaDetallesPizza + ", idCupon=" + idCupon + '}';
+    }
+
+    public String getTipo() {
+        return tipo;
     }
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
+
+    public String getIdCupon() {
+        return idCupon;
+    }
+
+    public void setIdCupon(String idCupon) {
+        this.idCupon = idCupon;
+    }
+
+    
 
     public void setIdUsuario(Integer idUsuario) {
         this.idUsuario = idUsuario;

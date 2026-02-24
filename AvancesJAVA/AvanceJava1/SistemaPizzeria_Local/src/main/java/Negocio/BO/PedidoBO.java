@@ -4,12 +4,17 @@
  */
 package Negocio.BO;
 
+import Negocio.DTO.DetallePizzaNuevoDTO;
+import Negocio.DTO.PedidoNuevoDTO;
 import Negocio.Excepciones.NegocioException;
 import Persistencia.DAO.IPedidoDAO;
+import Persistencia.Dominio.DetallesPizza;
 import Persistencia.Dominio.Pedido;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import persistencia.excepciones.PersistenciaException;
+
 
 /**
  *
@@ -25,8 +30,15 @@ public class PedidoBO implements IPedidoBO{
         this.pedidoDAO = pedido; //inyeccion de dependencia
     }
     
+        
+        
+    
     @Override
     public void cambiarEstado(Integer id, String estado) throws NegocioException{
+        if(id <1){
+            Log.warning("El id introducido es menor a 1.");
+            throw new NegocioException("El id no puede ser menor a 1");
+        }
         if(id == null){
             Log.warning("El id introducido es nulo.");
             throw new NegocioException("El id buscado es nulo");
@@ -77,8 +89,17 @@ public class PedidoBO implements IPedidoBO{
             throw new NegocioException("Error al consultar pedido" + ex.getMessage());
         }
     }
+    
     @Override
     public Pedido consultarPedido(Integer id) throws NegocioException{
+        if(id <1){
+            Log.warning("El id introducido es menor a 1.");
+            throw new NegocioException("El id no puede ser menor a 1");
+        }
+        if(id == null){
+            Log.warning("El id introducido es nulo.");
+            throw new NegocioException("El id buscado es nulo");
+        }
         // validaciones pendientes
         try{
             Pedido pedidoConsultado = this.pedidoDAO.consultarPedido(id);
@@ -86,5 +107,100 @@ public class PedidoBO implements IPedidoBO{
         }catch(PersistenciaException ex){
             throw new NegocioException("Error al consultar pedido: " + ex.getMessage());
         }
+    }
+    
+    
+    @Override
+    public void agregarDetalle(DetallePizzaNuevoDTO detallePizza, Integer id_pedido) throws NegocioException{
+        
+        // PRIMERO VALIDACIONES DE 
+        
+
+    }
+    
+    @Override 
+    public boolean agregarPedidoCompleto(PedidoNuevoDTO pedidoNuevo)throws NegocioException{
+        // PRIMERO VALIDACIONES DE PEDIDO COMO TAL
+        
+        // Validar que el objeto no sea nulo
+        if(pedidoNuevo == null){
+            Log.warning("Error de operacion. Objeto nulo");
+            throw new NegocioException("El pedido se encuentra vacío.");
+        }
+        
+        // Validar que el id sea permitido o tenga valor
+        if(pedidoNuevo.getIdUsuario() == null || pedidoNuevo.getIdUsuario() < 0){
+            Log.warning("Problemas con el id.");
+            throw new NegocioException("El id no puede ser nulo o negativo.");
+        }
+        
+        // Validar el metodo de pago
+        if(pedidoNuevo.getMetodo_pago() == null){
+            Log.warning("Error de operacion. Metodo_pago nulo");
+            throw new NegocioException("El pedido no tiene un metodo de pago.");
+        }
+        
+        // Validar el metodo de pago permitido
+        if(!pedidoNuevo.getMetodo_pago().equals("Tarjeta") || !pedidoNuevo.getMetodo_pago().equals("Efectivo")){
+            Log.warning("Error de operacion. Metodo_pago no adecuado");
+            throw new NegocioException("El pedido no tiene un metodo de pago vàlido.");
+        }
+        
+        // VALIDACIONES DE LOS DETALLES PIZZAS
+        
+        // validacion de la lista de detalles dto
+        if(pedidoNuevo.getListaDetallesPizza() == null){
+            Log.warning("Error de operacion. Lista de detalles vacia");
+            throw new NegocioException("El pedido no detalles del pedido asignado.");
+        }
+        
+        // para validar que la cantidad no sea nula o negativa
+        // variable sumatoria que almacenara elcosto total de cada detalle pedido registrado
+        double total = 0;
+        
+        // mapear de dpDTO a dp
+        List<DetallesPizza> lista = new ArrayList<DetallesPizza>();
+        
+        
+        for(DetallePizzaNuevoDTO detalle: pedidoNuevo.getListaDetallesPizza()){
+            // validar si es negativo el costo
+            if(detalle.getCosto() <0){
+                Log.warning("Error de operacion. Costo negativo");
+                throw new NegocioException("El pedido tiene costo negativo asignado.");
+            }
+            // validar si es negativa
+            if(detalle.getCantidad() <0){
+                Log.warning("Error de operacion. cantidad negativa.");
+                throw new NegocioException("El pedido tiene cantidad negativa.");
+            }
+            DetallesPizza dp = new DetallesPizza();
+            // Mapeo de dto a entidad
+            dp.setCosto(detalle.getCosto());
+            dp.setCantidad(detalle.getCantidad());
+            dp.setNotas(detalle.getNotas());
+            dp.setTamanio(detalle.getTamaño());
+            //agregar a la lista
+            lista.add(dp);
+            // sumatoria de totales
+            total += detalle.getCosto();
+        }
+        
+        // NORMALIZACION DE DATOS
+        
+        // Para pedido
+        Pedido pedidoAgregar = new Pedido();
+        pedidoAgregar.setMetodo_pago(pedidoNuevo.getMetodo_pago().trim());
+        pedidoAgregar.setIdUsuario(pedidoNuevo.getIdUsuario());
+        pedidoAgregar.setTotal(total);
+        
+        // para detalles pizza
+        try {
+            this.pedidoDAO.registrarPedidoCompleto(pedidoAgregar, lista);
+        } catch (PersistenciaException ex) {
+            Log.warning("Error de operacion. No se pudo registrar pedido");
+            throw new NegocioException("Error al intentar registrar pedido");
+        }
+        
+        return false;
     }
 }
