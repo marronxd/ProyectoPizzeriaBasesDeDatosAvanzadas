@@ -46,6 +46,7 @@ public class InformacionPedido extends JPanel {
 
         // Botones de accion y navegacion
         JButton agregar = boton("Agregar", 900, 570, 600, 120, 40);
+        agregar.setVisible(DatosGlobales.esexpress);
         agregar.addActionListener(e -> { ventana.mostrarPantalla(new Carrito(ventana)); });
         cuadro.add(agregar);
 

@@ -25,13 +25,14 @@ public class InicioPrograma extends JPanel {
         this.setBounds(0,0,1920,1080);
         
         JButton cliente = boton("Cliente", 235, 550, 600, 120);
-        cliente.addActionListener(e -> { ventana.mostrarPantalla(new InicioSesion(ventana));});
+        cliente.addActionListener(e -> { ventana.mostrarPantalla(new InicioSesion(ventana)); DatosGlobales.esempleado = false; DatosGlobales.esexpress = false;});
         this.add(cliente);
         JButton empleado = boton("Empleado", 1050, 550, 600, 120);
-        empleado.addActionListener(e -> { ventana.mostrarPantalla(new InicioSesion(ventana));});
+        empleado.addActionListener(e -> { ventana.mostrarPantalla(new InicioSesion(ventana)); DatosGlobales.esempleado = true; DatosGlobales.esexpress = false;});
+        
         this.add(empleado);
         JButton express = boton("Express", 1500, 900, 300, 80);
-        express.addActionListener(e -> { ventana.mostrarPantalla(new Pedidos(ventana));});
+        express.addActionListener(e -> { DatosGlobales.esexpress = true; ventana.mostrarPantalla(new Pedidos(ventana));});
         this.add(express);
         JButton salir = boton("Salir", 150, 900, 150, 80);
         salir.addActionListener(e -> { System.exit(0);}); // este comando es para cerrar un programa, el 0 indica que todo bien

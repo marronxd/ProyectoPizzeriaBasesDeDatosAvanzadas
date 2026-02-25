@@ -32,6 +32,7 @@ public class Pedidos extends JPanel {
         realizarPedido.addActionListener(e -> { 
             ventana.mostrarPantalla(new MenuPizza(ventana)); 
         });
+        realizarPedido.setVisible(!DatosGlobales.esexpress);
         cuadro.add(realizarPedido);
 
         // Contenedor interno para los pedidos
