@@ -61,6 +61,10 @@ create table pedidos(
     estado enum("Listo","No reclamado", "Entregado", "Cancelado", "Pendiente", "No entregado") not null default "Pendiente",
     fechaHora_entrega date null,
     fechaHora_elaboracion date not null,
+	id_usuario int null,
+    foreign key (id_usuario) references clientes(id_usuario)
+    on delete cascade
+    on update cascade
 );
 
 create table pedidos_express(
@@ -90,10 +94,6 @@ create table pedidos_programados(
 	foreign key (id_cupon) references cupones(id_cupon)
     on update cascade
     on delete cascade
-	id_usuario int not null,
-    foreign key (id_usuario) references clientes(id_usuario)
-    on delete cascade
-    on update cascade
 );
 -- Tabla que guarda el historial de esos cambios de estado de cada pedid
 
