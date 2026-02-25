@@ -19,7 +19,7 @@ public class PedidoConfirmado {
 
     
     public static void main(String[] args) {
-        JFrame jf = new JFrame("Menu de Pizzas");
+    JFrame jf = new JFrame("Menu de Pizzas");
     JPanel jp = new JPanel();
     jf.setSize(1920, 1080); 
     jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
