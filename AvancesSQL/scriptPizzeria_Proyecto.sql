@@ -29,7 +29,7 @@ create table domicilios_clientes (
 
 create table clientes(
 	id_usuario int primary key,
-    estado enum("activo", "inactivo") default "activo",
+    estado enum("Activo", "Inactivo") default "activo",
     correo varchar(100) not null,
     fecha_nacimiento date not null,
 );
