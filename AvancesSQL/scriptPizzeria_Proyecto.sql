@@ -90,7 +90,7 @@ create table pedidos_programados(
 	foreign key (id_cupon) references cupones(id_cupon)
     on update cascade
     on delete cascade
-	id_usuario int null,
+	id_usuario int not null,
     foreign key (id_usuario) references clientes(id_usuario)
     on delete cascade
     on update cascade
