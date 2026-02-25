@@ -6,11 +6,15 @@ package com.sistemapizzeria_local;
 
 
 import Negocio.BO.IPedidoBO;
+import Negocio.DTO.DetallePizzaNuevoDTO;
 import Negocio.DTO.PedidoNuevoDTO;
 import Negocio.Excepciones.NegocioException;
 import Negocio.fabrica.FabricaBO;
 import Persistencia.Dominio.Pedido;
+import Persistencia.Dominio.Pizza;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 /**
  *
  * @author Andre
@@ -28,9 +32,24 @@ public class SistemaPizzeria_Local {
         try {
             Pedido pedido = pedidoBO.consultarPedido(2);
             System.out.println("consulta: " + pedido.toString());
+            System.out.println("==============");
+            
+            
+            List<DetallePizzaNuevoDTO> listaDetalle = new ArrayList<DetallePizzaNuevoDTO>();
+            Pizza pizza = new Pizza(1, "xd", "Grande", "sisi", 100, "Disponible");
+            
+            DetallePizzaNuevoDTO d1 = new DetallePizzaNuevoDTO(2, 200, "Grande", "Ninguna", 1);
+            listaDetalle.add(d1);
+            
+            
+            PedidoNuevoDTO pedido2 = new PedidoNuevoDTO("Tarjeta", "PROGRAMADO", 1, listaDetalle, null);
+            pedidoBO.agregarPedidoCompleto(pedido2);
+            System.out.println(pedido2.toString());
+            
         } catch (NegocioException ex) {
             System.getLogger(SistemaPizzeria_Local.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
       
+        
     }
 }

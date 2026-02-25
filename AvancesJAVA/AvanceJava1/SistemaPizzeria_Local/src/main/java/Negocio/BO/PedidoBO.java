@@ -7,9 +7,13 @@ package Negocio.BO;
 import Negocio.DTO.DetallePizzaNuevoDTO;
 import Negocio.DTO.PedidoNuevoDTO;
 import Negocio.Excepciones.NegocioException;
+import Persistencia.DAO.CuponDAO;
+import Persistencia.DAO.ICuponDAO;
 import Persistencia.DAO.IPedidoDAO;
+import Persistencia.Dominio.Cupon;
 import Persistencia.Dominio.DetallesPizza;
 import Persistencia.Dominio.Pedido;
+import Persistencia.Dominio.PedidoProgramado;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -23,14 +27,14 @@ import persistencia.excepciones.PersistenciaException;
 public class PedidoBO implements IPedidoBO{
     
     private final IPedidoDAO pedidoDAO;
+    private  final ICuponDAO cuponDAO;
     private final Logger Log = Logger.getLogger(PedidoBO.class.getName());
     
     // inicia la conexion con la interfaz de pedido dao
-    public PedidoBO(IPedidoDAO pedido){
+    public PedidoBO(IPedidoDAO pedido, ICuponDAO cupon){
         this.pedidoDAO = pedido; //inyeccion de dependencia
+        this.cuponDAO = cupon;
     }
-    
-        
         
     
     @Override
@@ -141,7 +145,7 @@ public class PedidoBO implements IPedidoBO{
         }
         
         // Validar el metodo de pago permitido
-        if(!pedidoNuevo.getMetodo_pago().equals("Tarjeta") || !pedidoNuevo.getMetodo_pago().equals("Efectivo")){
+        if(!pedidoNuevo.getMetodo_pago().equals("Tarjeta") && !pedidoNuevo.getMetodo_pago().equals("Efectivo")){
             Log.warning("Error de operacion. Metodo_pago no adecuado");
             throw new NegocioException("El pedido no tiene un metodo de pago vàlido.");
         }
@@ -157,6 +161,23 @@ public class PedidoBO implements IPedidoBO{
         // para validar que la cantidad no sea nula o negativa
         // variable sumatoria que almacenara elcosto total de cada detalle pedido registrado
         double total = 0;
+        
+        // CÓMO PUEDO AGREGAR EL DESCUENTO???? 🫀🥲🥲
+        double cantidadCupon = 0;
+        // validar codigo del cupoon
+        Cupon cupon = new Cupon();
+        if (pedidoNuevo.getCodigoCupon() != null){
+            
+            try {
+                cupon = this.cuponDAO.validarCupon(pedidoNuevo.getCodigoCupon().trim());
+                cantidadCupon = cupon.getCantidad();
+            } catch (PersistenciaException ex) {
+                throw new NegocioException(ex.getMessage());
+            }
+            
+        }
+        
+        
         
         // mapear de dpDTO a dp
         List<DetallesPizza> lista = new ArrayList<DetallesPizza>();
@@ -191,16 +212,19 @@ public class PedidoBO implements IPedidoBO{
         Pedido pedidoAgregar = new Pedido();
         pedidoAgregar.setMetodo_pago(pedidoNuevo.getMetodo_pago().trim());
         pedidoAgregar.setIdUsuario(pedidoNuevo.getIdUsuario());
-        pedidoAgregar.setTotal(total);
+        pedidoAgregar.setTotal(total - cantidadCupon);
+        
+        // el pedido con el descuento
+        pedidoAgregar.setTotalDCTO(cantidadCupon);
         
         // para detalles pizza
         try {
-            this.pedidoDAO.registrarPedidoCompleto(pedidoAgregar, lista);
+            this.pedidoDAO.registrarPedidoCompleto(pedidoAgregar, lista, cupon);
         } catch (PersistenciaException ex) {
             Log.warning("Error de operacion. No se pudo registrar pedido");
             throw new NegocioException("Error al intentar registrar pedido");
         }
         
-        return false;
+        return true;
     }
 }

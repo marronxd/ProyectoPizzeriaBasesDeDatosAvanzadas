@@ -5,8 +5,10 @@
 package Persistencia.DAO;
 
 import Persistencia.Conexion.IConexionBD;
+import Persistencia.Dominio.Cupon;
 import Persistencia.Dominio.DetallesPizza;
 import Persistencia.Dominio.Pedido;
+import java.sql.CallableStatement;
 import com.mysql.cj.protocol.Resultset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -71,47 +73,64 @@ public class PedidoDAO implements IPedidoDAO {
     }
     
     @Override
-    public void registrarPedidoCompleto(Pedido pedido, List<DetallesPizza> detallePizza)throws PersistenciaException{
+    public void registrarPedidoCompleto(Pedido pedido, List<DetallesPizza> detallePizza, Cupon cupon)throws PersistenciaException{
         String comandoSQL = """
-                        insert into pedidos (metodo_pago, total, totalDCTO, id_usuario)
-                        values(?, ?, ?, ?)
+                            {CALL SP_CrearPedidoCompleto(?, ?, ?, ?, ?, ?)}
                         """;
-        // 2. SQL para la tabla hija (Programados)
-        String SQLProgramado = "insert into pedidos_programados (id_pedido, id_cupon) values(?, ?)";
+        /**
+         * 1 = metodo pago
+         * 2 = total
+         * 3 = total descuento
+         * 4 = id_usuario
+         * 5 = id cupon
+         * 6 = regresa el id del pedido
+         */
         String SQLDetalles = """
                              insert into detallesPizzas (id_pedido, costo, cantidad, tamaño, notas, id_pizza) 
                              values(?, ?, ?, ?, ?, ?)
                              """;
         // establecer la conexion a sql
-        try (Connection conexion = this.conexionBD.crearConexion(); PreparedStatement psP = conexion.prepareStatement(comandoSQL, Statement.RETURN_GENERATED_KEYS)){
+        try (Connection conexion = this.conexionBD.crearConexion(); 
+             CallableStatement psP = conexion.prepareCall(comandoSQL)){
+            
+            conexion.setAutoCommit(false); // Iniciamos transacción
             // mapeo creo pero ahora para mandar los datos para la creacion de pedido
             psP.setString(1, pedido.getMetodo_pago());
             psP.setDouble(2, pedido.getTotal());
-            
-            psP.setDouble(3, 0.0);
-            psP.setInt(4, (int) pedido.getIdUsuario());
-            
-            psP.executeUpdate();
-            ResultSet rs = psP.getGeneratedKeys();
-            int idPedidoGenerado = 0;
-            if (rs.next()) {
-                idPedidoGenerado = rs.getInt(1);
+            psP.setDouble(3, pedido.getTotalDCTO());
+            psP.setInt(4, pedido.getIdUsuario());
+            // Manejo de cupón opcional (evita NullPointerException)
+            if (cupon != null && cupon.getId_cupon() != null) {
+                psP.setInt(5, cupon.getId_cupon());
+            } else {
+                psP.setNull(5, java.sql.Types.INTEGER);
             }
+            
+            // REGISTRAR EL PARAMETRO DE SALIDA
+            psP.registerOutParameter(6, java.sql.Types.INTEGER);
+            
+            psP.execute(); // ejecuta el sql 
+            
+            int idGenerado = psP.getInt(6);
+            
             // Segunda conexion
             try(PreparedStatement psD = conexion.prepareStatement(SQLDetalles)){
                 for (DetallesPizza detP : detallePizza){
-                    psD.setInt(1, idPedidoGenerado);
+                    psD.setInt(1, idGenerado);
                     psD.setDouble(2, detP.getCosto());
-                    psD.setInt(3, (int) detP.getCantidad());
+                    psD.setInt(3, detP.getCantidad());
                     psD.setString(4, detP.getTamanio());
                     psD.setString(5, detP.getNotas());
-                    psD.setInt(6, (int) detP.getId_pizza());
+                    psD.setInt(6, detP.getId_pizza());
                     psD.executeUpdate();
                    
                 }
-                
+            conexion.commit(); // Todo fue un éxito
+            }catch(SQLException ex){
+                conexion.rollback(); // por si hubo una falla, regresar todos los cambios
+                LOG.warning(ex.getMessage());
+                throw new PersistenciaException(ex.getMessage());
             }
-        
         }catch(SQLException ex){
             LOG.warning(ex.getMessage());
             throw new PersistenciaException(ex.getMessage());

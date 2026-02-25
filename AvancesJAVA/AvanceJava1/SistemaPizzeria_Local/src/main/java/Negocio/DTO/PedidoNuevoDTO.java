@@ -24,14 +24,14 @@ public class PedidoNuevoDTO {
     private List<DetallePizzaNuevoDTO> listaDetallesPizza;
     
     //opcional para en caso de que sea pedidoProgramado
-    private String idCupon;
+    private String codigoCupon;
 
-    public PedidoNuevoDTO(String metodo_pago, String tipo, Integer idUsuario, List<DetallePizzaNuevoDTO> listaDetallesPizza, String idCupon) {
+    public PedidoNuevoDTO(String metodo_pago, String tipo, Integer idUsuario, List<DetallePizzaNuevoDTO> listaDetallesPizza, String codigoCupon) {
         this.metodo_pago = metodo_pago;
         this.tipo = tipo;
         this.idUsuario = idUsuario;
         this.listaDetallesPizza = listaDetallesPizza;
-        this.idCupon = idCupon;
+        this.codigoCupon = codigoCupon;
     }
 
     
@@ -64,7 +64,7 @@ public class PedidoNuevoDTO {
 
     @Override
     public String toString() {
-        return "PedidoNuevoDTO{" + "metodo_pago=" + metodo_pago + ", tipo=" + tipo + ", idUsuario=" + idUsuario + ", listaDetallesPizza=" + listaDetallesPizza + ", idCupon=" + idCupon + '}';
+        return "PedidoNuevoDTO{" + "metodo_pago=" + metodo_pago + ", tipo=" + tipo + ", idUsuario=" + idUsuario + ", listaDetallesPizza=" + listaDetallesPizza + ", codigoCupon=" + codigoCupon + '}';
     }
 
     public String getTipo() {
@@ -75,12 +75,12 @@ public class PedidoNuevoDTO {
         this.tipo = tipo;
     }
 
-    public String getIdCupon() {
-        return idCupon;
+    public String getCodigoCupon() {
+        return codigoCupon;
     }
 
-    public void setIdCupon(String idCupon) {
-        this.idCupon = idCupon;
+    public void setCodigoCupon(String codigoCupon) {
+        this.codigoCupon = codigoCupon;
     }
 
     

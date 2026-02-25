@@ -6,6 +6,8 @@ package Negocio.fabrica;
 
 import Persistencia.Conexion.ConexionBD;
 import Persistencia.Conexion.IConexionBD;
+import Persistencia.DAO.CuponDAO;
+import Persistencia.DAO.ICuponDAO;
 import Persistencia.DAO.IPedidoDAO;
 import Persistencia.DAO.PedidoDAO;
 
@@ -24,4 +26,10 @@ public class FabricaDAO {
         return pedidoDAO;
         
     }
+    //para obtener la interfaz del cupon
+    public static ICuponDAO obtenerCuponDAO(){
+        ICuponDAO cuponDAO = new CuponDAO(conexionBD);
+        return cuponDAO;
+    }
+    
 }

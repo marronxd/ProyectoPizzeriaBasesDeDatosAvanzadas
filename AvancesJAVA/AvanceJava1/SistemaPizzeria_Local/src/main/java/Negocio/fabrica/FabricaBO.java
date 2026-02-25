@@ -14,7 +14,7 @@ import Negocio.BO.PedidoBO;
 public class FabricaBO {
     
     public static IPedidoBO obtenerPedidoBO(){
-        IPedidoBO tecnico = new PedidoBO(FabricaDAO.obtenerPedidoDAO());
+        IPedidoBO tecnico = new PedidoBO(FabricaDAO.obtenerPedidoDAO(), FabricaDAO.obtenerCuponDAO());
         return tecnico;
     }
 }

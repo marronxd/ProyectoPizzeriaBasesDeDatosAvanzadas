@@ -5,6 +5,7 @@
 package Persistencia.DAO;
 
 import Negocio.DTO.DetallePizzaNuevoDTO;
+import Persistencia.Dominio.Cupon;
 import Persistencia.Dominio.DetallesPizza;
 import Persistencia.Dominio.Pedido;
 import java.util.ArrayList;
@@ -33,5 +34,5 @@ public interface IPedidoDAO {
      */
     public Pedido consultarPedido(Integer pedido) throws PersistenciaException;
     
-    public void registrarPedidoCompleto(Pedido pedido, List<DetallesPizza> detallesPizza)throws PersistenciaException;
+    public void registrarPedidoCompleto(Pedido pedido, List<DetallesPizza> detallesPizza, Cupon cupon)throws PersistenciaException;
 }

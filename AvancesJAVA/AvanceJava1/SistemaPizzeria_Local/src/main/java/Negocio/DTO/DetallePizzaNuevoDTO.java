@@ -24,6 +24,14 @@ public class DetallePizzaNuevoDTO {
         this.id_pizza = id_pizza;
     }
 
+    public DetallePizzaNuevoDTO(int cantidad, double costo, String tamaño, String notas, Integer id_pizza) {
+        this.cantidad = cantidad;
+        this.costo = costo;
+        this.tamaño = tamaño;
+        this.notas = notas;
+        this.id_pizza = id_pizza;
+    }
+
     
     // constructor vacio
     public DetallePizzaNuevoDTO() {
