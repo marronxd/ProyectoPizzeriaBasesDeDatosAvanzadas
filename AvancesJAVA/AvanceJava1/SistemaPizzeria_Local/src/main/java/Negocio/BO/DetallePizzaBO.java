@@ -22,7 +22,7 @@ public class DetallePizzaBO implements IDetallePizzaBO{
     public DetallePizzaBO(IDetallePizzaDAO detalleDAO){
         this.detalleDAO = detalleDAO;
     }
-    
+    //sin uso
     @Override
     public DetallePizzaNuevoDTO agregarDetallePizza(DetallePizzaNuevoDTO detalleAgregar)throws NegocioException{
         if(detalleAgregar == null){
@@ -44,10 +44,12 @@ public class DetallePizzaBO implements IDetallePizzaBO{
         // 4.- mapear dto
         return null;
     }
+    //sin uso
     @Override
     public DetallesPizza agregarPizza(DetallesPizza detalleModificar) throws NegocioException{
         return null;
     }
+    //sin uso
     @Override
     public DetallesPizza eliminarPizza(DetallesPizza detalleModificar) throws NegocioException{
         return null;

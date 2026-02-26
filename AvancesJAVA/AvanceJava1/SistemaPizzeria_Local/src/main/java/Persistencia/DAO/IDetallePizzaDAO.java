@@ -13,9 +13,10 @@ import persistencia.excepciones.PersistenciaException;
  * @author aaron
  */
 public interface IDetallePizzaDAO {
+    //sin uso
     public DetallesPizza agregarDetallePizza(DetallesPizza detalleAgregar) throws PersistenciaException;
-    
+    //sin uso
     public DetallesPizza agregarPizza(DetallesPizza detalleModificar) throws PersistenciaException;
-    
+    //sin uso
     public DetallesPizza eliminarPizza(DetallesPizza detalleModificar) throws PersistenciaException;
 }

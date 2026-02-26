@@ -14,6 +14,7 @@ import Persistencia.Dominio.Cupon;
 import Persistencia.Dominio.DetallesPizza;
 import Persistencia.Dominio.Pedido;
 import Persistencia.Dominio.PedidoProgramado;
+import Seguridad.Encriptar;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -21,7 +22,12 @@ import persistencia.excepciones.PersistenciaException;
 
 
 /**
- *
+ * Es la capa de negocio que valida todo lo relacionado a pedido, normaliza y conecta las capas
+ * 
+ * Se inyectan las dependencias de pedido 
+ * y las de cupon solamente para validar el cupon en esta capa
+ * 
+ * contiene metodos para extraer,  modificar y crear pedidos
  * @author aaron
  */
 public class PedidoBO implements IPedidoBO{
@@ -35,31 +41,72 @@ public class PedidoBO implements IPedidoBO{
         this.pedidoDAO = pedido; //inyeccion de dependencia
         this.cuponDAO = cupon;
     }
-        
-    
+    /**
+     * Método que cambia el estado de los pedidos express con el pin que recibe
+     * @param idPedido el id asociado a ese pedido express
+     * @param pin es que introduce el usuario
+     * @throws NegocioException si ocurre algun movimiento inesperado
+     */
     @Override
-    public void cambiarEstado(Integer id, String estado) throws NegocioException{
-        if(id <1){
+    public void cambiarEstadoExpress(Integer idPedido, Integer pin) throws NegocioException{
+        // validaciones
+        if(idPedido == null){
+            Log.warning("El id introducido es nulo.");
+            throw new NegocioException("El id buscado es nulo");
+        }
+        if(pin == null){
+            Log.warning("El pin extraido es nulo.");
+            throw new NegocioException("El pin buscado es nulo");
+        }
+        if(idPedido <0){
             Log.warning("El id introducido es menor a 1.");
             throw new NegocioException("El id no puede ser menor a 1");
         }
+        try {
+            PedidoNuevoDTO p = this.pedidoDAO.consultarExpress(idPedido);
+            if(p.getPin().equals(Encriptar.encriptar(pin))){ // determinista
+                this.pedidoDAO.cambiarEstado(idPedido, "Entregado");
+            }
+        } catch (PersistenciaException ex) {
+            Log.warning(ex.getMessage());
+            throw new NegocioException(ex.getMessage());
+        }
+        
+    }
+    /**
+     * Metodo que cambia el estado de un pedido programado en secuencia
+     * @param id el id del pedido al que nos referimos
+     * @param estado el estado al que se quiere cambiar
+     * @throws NegocioException  si ocurre un suceso innesperado o que no queremos que pase
+     */
+    @Override
+    public void cambiarEstado(Integer id, String estado) throws NegocioException{
+        // VALIDACIONES
         if(id == null){
             Log.warning("El id introducido es nulo.");
             throw new NegocioException("El id buscado es nulo");
         }
+        
         if(estado == null){
             Log.warning("El estado es nulo.");
             throw new NegocioException("El estado es nulo");
         }
+        
+        if(id <1){
+            Log.warning("El id introducido es menor a 1.");
+            throw new NegocioException("El id no puede ser menor a 1");
+        }
+        // normalizar el estado
+        estado = estado.trim();
+        
         // auxiliar
         // Validar estados permitidos  - - jeje, sí, lo busque en internet
         List<String> estadosValidos = List.of(
-            "Listo",
-            "No reclamado",
-            "Entregado",
-            "Cancelado",
-            "Pendiente",
-            "No entregado"
+            "Listo", // 0 
+            "Entregado", // 1
+            "Cancelado", // 2
+            "Pendiente", // 3
+            "No entregado" // 4
         );
         
         // si el estado no esta registrado dentro de su dominio
@@ -68,21 +115,31 @@ public class PedidoBO implements IPedidoBO{
             throw new NegocioException("Estado invalido");
         }
         
-        
-        
-        // crear la entidad con 
         try{
             Pedido pedidoCambiar = this.pedidoDAO.consultarPedido(id);
             if (pedidoCambiar == null) {
                 throw new NegocioException("Pedido no encontrado.");
             }
             // se extrae el estado original del pedido
-            String estadoActual = pedidoCambiar.getEstado();
+            String estadoActual = pedidoCambiar.getEstado().trim();
             
             // se valida que dicho estado no esté finalizado
-            if(estadoActual.equals("Entregado") || estadoActual.equals("Cancelado")){
+            if(estadoActual.equals(estadosValidos.get(1)) || estadoActual.equals(estadosValidos.get(2)) || estadoActual.equals(estadosValidos.get(4))){
                 Log.warning("Estados finalizados");
                 throw new NegocioException("No se puede modificar un estado finalizado");
+            }
+            
+            // VALIDAR SECUENCIA DE ESTADOS
+            if(estadoActual.equals("Pendiente")){
+                if(!estado.equals("Listo") && !estado.equals("Cancelado")){
+                    Log.warning("cambio no lineal");
+                    throw new NegocioException("Falla en la secuencia de cambio");
+                }
+            }else if(estadoActual.equals("Listo")){
+                if (!estado.equals("Entregado") && !estado.equals("No entregado")) {
+                    Log.warning("cambio no lineal");
+                    throw new NegocioException("Un pedido Listo solo puede pasar a Entregado o No entregado.");
+                }
             }
             
             //se modifica la entidad 
@@ -93,7 +150,12 @@ public class PedidoBO implements IPedidoBO{
             throw new NegocioException("Error al consultar pedido" + ex.getMessage());
         }
     }
-    
+    /**
+     *  Metodo que deuelve un objeto o entidad de la base de datos
+     * @param id el id del pedido al  que nos referimos
+     * @return el objeto completo de la bd
+     * @throws NegocioException 
+     */
     @Override
     public Pedido consultarPedido(Integer id) throws NegocioException{
         if(id <1){
@@ -112,16 +174,12 @@ public class PedidoBO implements IPedidoBO{
             throw new NegocioException("Error al consultar pedido: " + ex.getMessage());
         }
     }
-    
-    
-    @Override
-    public void agregarDetalle(DetallePizzaNuevoDTO detallePizza, Integer id_pedido) throws NegocioException{
-        
-        // PRIMERO VALIDACIONES DE 
-        
-
-    }
-    
+    /**
+     * Metodo que mapea un pedido ya bien formado al dao
+     * @param pedidoNuevo el "boceto" del pedido que queremos añadir, un pedido no registrado
+     * @return verdadero o falso si se ejecuta o no
+     * @throws NegocioException 
+     */
     @Override 
     public boolean agregarPedidoCompleto(PedidoNuevoDTO pedidoNuevo)throws NegocioException{
         // PRIMERO VALIDACIONES DE PEDIDO COMO TAL
@@ -133,9 +191,11 @@ public class PedidoBO implements IPedidoBO{
         }
         
         // Validar que el id sea permitido o tenga valor
-        if(pedidoNuevo.getIdUsuario() == null || pedidoNuevo.getIdUsuario() < 0){
-            Log.warning("Problemas con el id.");
-            throw new NegocioException("El id no puede ser nulo o negativo.");
+        if(pedidoNuevo.getIdUsuario() != null){
+            if(pedidoNuevo.getIdUsuario() < 0){
+                 Log.warning("Problemas con el id.");
+                throw new NegocioException("El id no puede ser negativo.");
+            }
         }
         
         // Validar el metodo de pago
@@ -166,10 +226,14 @@ public class PedidoBO implements IPedidoBO{
         double cantidadCupon = 0;
         // validar codigo del cupoon
         Cupon cupon = new Cupon();
-        if (pedidoNuevo.getCodigoCupon() != null){
+        if (pedidoNuevo.getCodigoCupon() != null && pedidoNuevo.getIdUsuario() != null){
             
             try {
                 cupon = this.cuponDAO.validarCupon(pedidoNuevo.getCodigoCupon().trim());
+                if(cupon == null){
+                    Log.warning("No hay cupon registrado");
+                    throw new NegocioException("No hay cupon registrado con este codigo");
+                }
                 cantidadCupon = cupon.getCantidad();
             } catch (PersistenciaException ex) {
                 throw new NegocioException(ex.getMessage());
@@ -196,6 +260,7 @@ public class PedidoBO implements IPedidoBO{
             }
             DetallesPizza dp = new DetallesPizza();
             // Mapeo de dto a entidad
+            dp.setId_pizza(detalle.getId_pizza());
             dp.setCosto(detalle.getCosto());
             dp.setCantidad(detalle.getCantidad());
             dp.setNotas(detalle.getNotas());
@@ -211,15 +276,25 @@ public class PedidoBO implements IPedidoBO{
         // Para pedido
         Pedido pedidoAgregar = new Pedido();
         pedidoAgregar.setMetodo_pago(pedidoNuevo.getMetodo_pago().trim());
+        
+        // para saber que tipo de pedido es en base al id usuario
+        if(pedidoNuevo.getIdUsuario() == null){
+            pedidoAgregar.setTipo("EXPRESS");
+            
+        }else{
+            pedidoAgregar.setTipo("PROGRAMADO");
+        }
         pedidoAgregar.setIdUsuario(pedidoNuevo.getIdUsuario());
         pedidoAgregar.setTotal(total - cantidadCupon);
-        
         // el pedido con el descuento
         pedidoAgregar.setTotalDCTO(cantidadCupon);
         
+        // para el pin del express
+        
+        int pinGenerado = 10000000 + new java.util.Random().nextInt(90000000);
         // para detalles pizza
         try {
-            this.pedidoDAO.registrarPedidoCompleto(pedidoAgregar, lista, cupon);
+            this.pedidoDAO.registrarPedidoCompleto(pedidoAgregar, lista, cupon, pinGenerado);
         } catch (PersistenciaException ex) {
             Log.warning("Error de operacion. No se pudo registrar pedido");
             throw new NegocioException("Error al intentar registrar pedido");

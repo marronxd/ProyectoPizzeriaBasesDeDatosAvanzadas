@@ -46,7 +46,9 @@ public class Pedido {
         this.fechaHora_elaboracion = fechaHora_elaboracion;
         this.idUsuario = idUsuario;
     }
-
+    /**
+     * Constructor vacío
+     */
     public Pedido(){
         
     }
@@ -74,10 +76,6 @@ public class Pedido {
         this.idUsuario = idUsuario;
     }
 
-
-   
-    
-    
     public void setIdPedido(Integer idPedido) {
         this.idPedido = idPedido;
     }

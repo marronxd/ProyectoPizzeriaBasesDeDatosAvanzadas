@@ -30,22 +30,25 @@ public class SistemaPizzeria_Local {
         // crear dto 
         
         try {
+            /**
             Pedido pedido = pedidoBO.consultarPedido(2);
             System.out.println("consulta: " + pedido.toString());
             System.out.println("==============");
             
-            
             List<DetallePizzaNuevoDTO> listaDetalle = new ArrayList<DetallePizzaNuevoDTO>();
             Pizza pizza = new Pizza(1, "xd", "Grande", "sisi", 100, "Disponible");
             
-            DetallePizzaNuevoDTO d1 = new DetallePizzaNuevoDTO(2, 200, "Grande", "Ninguna", 1);
+            DetallePizzaNuevoDTO d1 = new DetallePizzaNuevoDTO(1, 200, "Grande", "ninguna", pizza.getId());
+            
             listaDetalle.add(d1);
             
             
-            PedidoNuevoDTO pedido2 = new PedidoNuevoDTO("Tarjeta", "PROGRAMADO", 1, listaDetalle, null);
+            PedidoNuevoDTO pedido2 = new PedidoNuevoDTO("Efectivo", listaDetalle);
             pedidoBO.agregarPedidoCompleto(pedido2);
             System.out.println(pedido2.toString());
+            */
             
+            pedidoBO.cambiarEstado(6, "Entregado");
         } catch (NegocioException ex) {
             System.getLogger(SistemaPizzeria_Local.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }

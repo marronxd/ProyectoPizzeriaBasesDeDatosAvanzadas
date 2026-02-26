@@ -7,7 +7,7 @@ package Persistencia.Dominio;
 import java.time.LocalDate;
 
 /**
- *
+ * //sin uso
  * @author aaron
  */
 public class PedidoProgramado extends Pedido{

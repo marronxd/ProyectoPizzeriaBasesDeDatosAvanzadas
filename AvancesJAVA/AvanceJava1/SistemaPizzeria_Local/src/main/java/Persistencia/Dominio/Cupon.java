@@ -7,7 +7,7 @@ package Persistencia.Dominio;
 import java.time.LocalDate;
 
 /**
- *
+ * Representa la entidad de un registro en la base de datos
  * @author aaron
  */
 public class Cupon {
@@ -18,6 +18,15 @@ public class Cupon {
     private double cantidad;
     private String codigo;
 
+    /**
+     * constructor con id cupon
+     * @param id_cupon
+     * @param limite_usos
+     * @param fecha_caducidad
+     * @param fecha_emision
+     * @param cantidad
+     * @param codigo 
+     */
     public Cupon(Integer id_cupon, int limite_usos, LocalDate fecha_caducidad, LocalDate fecha_emision, double cantidad, String codigo) {
         this.id_cupon = id_cupon;
         this.limite_usos = limite_usos;
@@ -26,7 +35,14 @@ public class Cupon {
         this.cantidad = cantidad;
         this.codigo = codigo;
     }
-
+    /**
+     * constructor sin id cupon
+     * @param limite_usos
+     * @param fecha_caducidad
+     * @param fecha_emision
+     * @param cantidad
+     * @param codigo 
+     */
     public Cupon(int limite_usos, LocalDate fecha_caducidad, LocalDate fecha_emision, double cantidad, String codigo) {
         this.limite_usos = limite_usos;
         this.fecha_caducidad = fecha_caducidad;
