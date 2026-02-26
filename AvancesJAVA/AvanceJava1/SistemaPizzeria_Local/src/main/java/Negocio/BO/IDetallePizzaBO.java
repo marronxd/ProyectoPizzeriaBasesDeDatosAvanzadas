@@ -13,10 +13,10 @@ import Persistencia.Dominio.DetallesPizza;
  * @author aaron
  */
 public interface IDetallePizzaBO {
-    
+    //sin uso
     public DetallePizzaNuevoDTO agregarDetallePizza(DetallePizzaNuevoDTO detalleAgregar) throws NegocioException;
-    
+    //sin uso
     public DetallesPizza agregarPizza(DetallesPizza detalleModificar) throws NegocioException;
-    
+    //sin uso
     public DetallesPizza eliminarPizza(DetallesPizza detalleModificar) throws NegocioException;
  }

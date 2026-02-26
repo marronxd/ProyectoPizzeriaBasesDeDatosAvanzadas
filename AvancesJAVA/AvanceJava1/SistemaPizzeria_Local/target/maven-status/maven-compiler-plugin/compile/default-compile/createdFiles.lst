@@ -21,3 +21,4 @@ Negocio\DTO\DomicilioDTO.class
 Persistencia\Dominio\Cupon.class
 Persistencia\DAO\ICuponDAO.class
 Persistencia\Dominio\Telefono.class
+Seguridad\Encriptar.class

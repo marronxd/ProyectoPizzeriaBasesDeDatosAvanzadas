@@ -4,10 +4,12 @@
  */
 package Persistencia.DAO;
 
+import Negocio.DTO.PedidoNuevoDTO;
 import Persistencia.Conexion.IConexionBD;
 import Persistencia.Dominio.Cupon;
 import Persistencia.Dominio.DetallesPizza;
 import Persistencia.Dominio.Pedido;
+import Seguridad.Encriptar;
 import java.sql.CallableStatement;
 import com.mysql.cj.protocol.Resultset;
 import java.sql.Connection;
@@ -18,6 +20,7 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Logger;
 import persistencia.excepciones.PersistenciaException;
 
@@ -49,7 +52,41 @@ public class PedidoDAO implements IPedidoDAO {
     public PedidoDAO(IConexionBD conexionBD) {
         this.conexionBD = conexionBD;
     }
+    /**
+     * Consulta un pedido express para obtener la informacion
+     * @param idPedido  es el id del pedido
+     * @return es contiene el folio y pedido
+     * @throws PersistenciaException si es algo no esperado
+     */
+    @Override
+    public PedidoNuevoDTO consultarExpress(Integer idPedido) throws PersistenciaException{
+        String comandoSQL = "SELECT id_pedido, pin FROM pedidos_express WHERE id_pedido = ?";
 
+        try (Connection conexion = this.conexionBD.crearConexion(); 
+             PreparedStatement ps = conexion.prepareStatement(comandoSQL)) {
+
+            ps.setInt(1, idPedido);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                PedidoNuevoDTO dto = new PedidoNuevoDTO();
+                dto.setFolio(rs.getInt("id_pedido"));
+                dto.setPin(rs.getString("pin")); // se extrae el hash
+                return dto;
+            }
+            return null;
+
+        } catch (SQLException ex) {
+            throw new PersistenciaException("Error al consultar pedido express: " + ex.getMessage());
+        }
+    }
+    /**
+     * Cambia el estado de un pedido, dependiendo la necesidad
+     * sigue una linealidad de estados
+     * @param id es el id del pedido
+     * @param estado es el estado al que se quiere cambiar
+     * @throws PersistenciaException  si algo sale innesperado 
+     */
     @Override
     public void cambiarEstado(Integer id, String estado) throws PersistenciaException {
         String comandoSQL = """
@@ -71,11 +108,19 @@ public class PedidoDAO implements IPedidoDAO {
             throw new PersistenciaException(ex.getMessage());
         }
     }
-    
+    /**
+     * Registra un pedido, ya sea express o programado
+     * extrae cada elemento de un pedido y lo pasa a la base de datos
+     * @param pedido es el objeto pedido 
+     * @param detallePizza es la lista de los detalles ligados a ese pedido
+     * @param cupon es el cupon asociado a es epedido (en caso de que sea programado)
+     * @param pinGenerado es el pin que se genera automaticamente para enviarse a la bd
+     * @throws PersistenciaException 
+     */
     @Override
-    public void registrarPedidoCompleto(Pedido pedido, List<DetallesPizza> detallePizza, Cupon cupon)throws PersistenciaException{
+    public void registrarPedidoCompleto(Pedido pedido, List<DetallesPizza> detallePizza, Cupon cupon, int pinGenerado)throws PersistenciaException{
         String comandoSQL = """
-                            {CALL SP_CrearPedidoCompleto(?, ?, ?, ?, ?, ?)}
+                            {CALL SP_CrearPedidoCompleto(?, ?, ?, ?, ?, ?, ?, ?)}
                         """;
         /**
          * 1 = metodo pago
@@ -83,7 +128,8 @@ public class PedidoDAO implements IPedidoDAO {
          * 3 = total descuento
          * 4 = id_usuario
          * 5 = id cupon
-         * 6 = regresa el id del pedido
+         * 6 = pin (para pedidos express)
+         * 7 = regresa el id del pedido
          */
         String SQLDetalles = """
                              insert into detallesPizzas (id_pedido, costo, cantidad, tamaño, notas, id_pizza) 
@@ -98,20 +144,36 @@ public class PedidoDAO implements IPedidoDAO {
             psP.setString(1, pedido.getMetodo_pago());
             psP.setDouble(2, pedido.getTotal());
             psP.setDouble(3, pedido.getTotalDCTO());
-            psP.setInt(4, pedido.getIdUsuario());
+            
+            // Manejar si id usuario es null o noS
+            if (pedido.getIdUsuario() != null && pedido.getIdUsuario() > 0) {
+                psP.setInt(4, pedido.getIdUsuario());
+            } else {
+                psP.setNull(4, java.sql.Types.INTEGER);
+            }
+            psP.setString(5, pedido.getTipo());
             // Manejo de cupón opcional (evita NullPointerException)
             if (cupon != null && cupon.getId_cupon() != null) {
-                psP.setInt(5, cupon.getId_cupon());
+                psP.setInt(6, cupon.getId_cupon());
             } else {
-                psP.setNull(5, java.sql.Types.INTEGER);
+                psP.setNull(6, java.sql.Types.INTEGER);
+            }
+            
+            // se llama metodo para encriptar
+            // Dentro de registrarPedidoCompleto en PedidoDAO
+            if ((Integer)pinGenerado != null) {
+                psP.setString(7, Encriptar.encriptar(pinGenerado));
+            } else {
+                // Como el SP no lo usará para pedidos programados, no hay riesgo.
+                psP.setString(7, "N/A"); 
             }
             
             // REGISTRAR EL PARAMETRO DE SALIDA
-            psP.registerOutParameter(6, java.sql.Types.INTEGER);
+            psP.registerOutParameter(8, java.sql.Types.INTEGER);
             
             psP.execute(); // ejecuta el sql 
             
-            int idGenerado = psP.getInt(6);
+            int idGenerado = psP.getInt(8);
             
             // Segunda conexion
             try(PreparedStatement psD = conexion.prepareStatement(SQLDetalles)){
@@ -121,6 +183,9 @@ public class PedidoDAO implements IPedidoDAO {
                     psD.setInt(3, detP.getCantidad());
                     psD.setString(4, detP.getTamanio());
                     psD.setString(5, detP.getNotas());
+                    if(detP.getId_pizza() == null){
+                        throw new PersistenciaException("id pizza nulo.");
+                    }
                     psD.setInt(6, detP.getId_pizza());
                     psD.executeUpdate();
                    
@@ -167,8 +232,9 @@ public class PedidoDAO implements IPedidoDAO {
                     pedido.setFechaHora_entrega(null);
                 }
 
-                // Fecha elaboración (asumimos que no es NULL)
-                pedido.setFechaHora_elaboracion(rs.getDate(7).toLocalDate());
+                if(rs.getDate(7) != null){
+                    pedido.setFechaHora_elaboracion(rs.getDate(7).toLocalDate());
+                }
 
                 pedido.setIdUsuario(rs.getInt(8));
                 return pedido;

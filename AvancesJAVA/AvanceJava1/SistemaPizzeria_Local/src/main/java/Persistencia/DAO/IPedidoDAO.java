@@ -5,6 +5,7 @@
 package Persistencia.DAO;
 
 import Negocio.DTO.DetallePizzaNuevoDTO;
+import Negocio.DTO.PedidoNuevoDTO;
 import Persistencia.Dominio.Cupon;
 import Persistencia.Dominio.DetallesPizza;
 import Persistencia.Dominio.Pedido;
@@ -13,7 +14,9 @@ import java.util.List;
 import persistencia.excepciones.PersistenciaException;
 
 /**
- *
+ * Es la interfaz conectora por asi decirlo. Es el intermediario para que otra capa 
+ * utilice los metodos
+ * 
  * @author aaron
  */
 public interface IPedidoDAO {
@@ -22,6 +25,7 @@ public interface IPedidoDAO {
     //CRUD basico
     /**
      * Metodo para cambiar el estado de un pedido 
+     *  PEDIDO SE REFIERE AL ESTADO
      * @param id es el id del pedido en especifico que queremos cambiar
      * @throws SQLException por si no jala alla en sql
      */
@@ -33,6 +37,21 @@ public interface IPedidoDAO {
      * @throws PersistenciaException 
      */
     public Pedido consultarPedido(Integer pedido) throws PersistenciaException;
-    
-    public void registrarPedidoCompleto(Pedido pedido, List<DetallesPizza> detallesPizza, Cupon cupon)throws PersistenciaException;
+    /**
+     * Método encargado de registrar por completo un pedido, sin importar de que tipo sea
+     * @param pedido es el objeto que representa al pediod
+     * @param detallesPizza es la lista de todos los detalles
+     * @param cupon representa un cupon existente en la base de datos
+     * @param pinGenerado es el pin que el usuario para poder reclamar 
+     * @throws PersistenciaException 
+     */
+    public void registrarPedidoCompleto(Pedido pedido, List<DetallesPizza> detallesPizza, Cupon cupon, int pinGenerado)throws PersistenciaException;
+    /**
+     * Metodo para consultar un pedido express (Regresa pedidoNuevoDTO porque tiene todos 
+     * los datos que  necesito)
+     * @param idPedido 
+     * @return
+     * @throws PersistenciaException 
+     */
+    public PedidoNuevoDTO consultarExpress(Integer idPedido) throws PersistenciaException;
 }

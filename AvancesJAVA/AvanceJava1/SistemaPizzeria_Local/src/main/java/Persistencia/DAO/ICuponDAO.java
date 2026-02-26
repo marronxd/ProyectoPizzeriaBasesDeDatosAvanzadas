@@ -8,12 +8,12 @@ import Persistencia.Dominio.Cupon;
 import persistencia.excepciones.PersistenciaException;
 
 /**
- *
+ * Interfaz que ayudara a inyectar dependencias en otras partes
  * @author aaron
  */
 public interface ICuponDAO {
     /**
-     * 
+     * Metodo que valida la existencia de un cupon en la bd
      * @return
      * @throws PersistenciaException 
      */

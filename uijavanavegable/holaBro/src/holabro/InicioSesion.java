@@ -51,7 +51,7 @@ public class InicioSesion extends JPanel {
         // Boton para iniciar sesion
         JButton iniciarSesion = boton("Iniciar Sesión", 735, 550, 600, 120, 40);
         iniciarSesion.addActionListener(e -> { 
-            ventana.mostrarPantalla(new Pedidos(ventana));
+            if (DatosGlobales.esempleado){ ventana.mostrarPantalla(new PedidosEmpleado(ventana));}else{ventana.mostrarPantalla(new Pedidos(ventana));}
         });
         this.add(iniciarSesion);
 

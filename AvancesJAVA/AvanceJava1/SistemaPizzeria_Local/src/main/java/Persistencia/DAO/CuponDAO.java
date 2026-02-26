@@ -15,7 +15,8 @@ import java.util.logging.Logger;
 import persistencia.excepciones.PersistenciaException;
 
 /**
- *
+ * Capa de cupon para comunicarme con la base de datos
+ * tiene metodos para validar si un cupon esta registrado
  * @author aaron
  */
 public class CuponDAO implements ICuponDAO{
@@ -30,11 +31,17 @@ public class CuponDAO implements ICuponDAO{
     public CuponDAO(IConexionBD conexionBD){
         this.conexionBD = conexionBD;
     }
+    /**
+     * Metodo que valida si un cupon existe en una base de datos.
+     * @param codigo el codigo que pertenece a un cupon
+     * @return
+     * @throws PersistenciaException 
+     */
     @Override
     public Cupon validarCupon(String codigo) throws PersistenciaException{
         String comandoSQL = """
                             select id_cupon, limite_usos, fecha_caducidad, fecha_emision, 
-                            cantidad, codigo from cupones where id_cupon = ?
+                            cantidad, codigo from cupones where codigo = ?
                             """;
         try(Connection conexion = conexionBD.crearConexion(); PreparedStatement ps = conexion.prepareStatement(comandoSQL)){
             ps.setString(1, codigo); // 1 porque es el pirmer ?

@@ -6,6 +6,8 @@ package holabro;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 
 
@@ -57,7 +59,16 @@ public class PedidosEmpleado extends JPanel {
         listaPedidos.setPreferredSize(new Dimension((int)(1400 * xf), (int)(1500 * yf)));
 
         // Boton de salida
-        this.add(etiqueta("Salir", 50, 940, 400, 80, 40, true));
+        JLabel salir = etiqueta("Salir", 50, 940, 400, 80, 40, true);
+        salir.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                ventana.mostrarPantalla(new InicioPrograma(ventana));
+            }
+        });
+        this.add(salir);
+        
+        
     }
 
 

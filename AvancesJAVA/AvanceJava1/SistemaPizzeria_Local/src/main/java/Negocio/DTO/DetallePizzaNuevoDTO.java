@@ -17,13 +17,27 @@ public class DetallePizzaNuevoDTO {
     private Integer id_pedido;
     private Integer id_pizza;
 
+    /**
+     * Constructor sin el costo y id pedido
+     * @param cantidad
+     * @param tamaño
+     * @param notas
+     * @param id_pizza 
+     */
     public DetallePizzaNuevoDTO(int cantidad, String tamaño, String notas, Integer id_pizza) {
         this.cantidad = cantidad;
         this.tamaño = tamaño;
         this.notas = notas;
         this.id_pizza = id_pizza;
     }
-
+    /**
+     * constructor sin id pedido (para los express)
+     * @param cantidad
+     * @param costo
+     * @param tamaño
+     * @param notas
+     * @param id_pizza 
+     */
     public DetallePizzaNuevoDTO(int cantidad, double costo, String tamaño, String notas, Integer id_pizza) {
         this.cantidad = cantidad;
         this.costo = costo;
@@ -36,7 +50,10 @@ public class DetallePizzaNuevoDTO {
     // constructor vacio
     public DetallePizzaNuevoDTO() {
     }
-    // con todos los atributos
+    /**
+     * 
+     * con todos los atributos
+    */
     public DetallePizzaNuevoDTO(int cantidad, double costo, String tamaño, String notas, Integer id_pedido, Integer id_pizza) {
         this.cantidad = cantidad;
         this.costo = costo;
