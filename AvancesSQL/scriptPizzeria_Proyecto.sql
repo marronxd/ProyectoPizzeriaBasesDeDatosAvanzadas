@@ -139,3 +139,7 @@ create table detalles_pizzas(
         on delete cascade
         on update cascade
 );
+
+select * from clientes;
+
+select * from usuarios;
