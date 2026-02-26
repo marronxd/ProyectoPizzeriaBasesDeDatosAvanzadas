@@ -11,8 +11,8 @@ import Persistencia.Dominio.DetallesPizza;
 import Persistencia.Dominio.Pedido;
 import Seguridad.Encriptar;
 import java.sql.CallableStatement;
-import com.mysql.cj.protocol.Resultset;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,7 +20,6 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Logger;
 import persistencia.excepciones.PersistenciaException;
 
@@ -246,4 +245,73 @@ public class PedidoDAO implements IPedidoDAO {
         }
        
     }
+    /**
+     * Filtra los pedidos por usuario, por el estado y por ambos
+     * @param id_usuario
+     * @param estado
+     * @return
+     * @throws PersistenciaException 
+     */
+    @Override
+    public List<Pedido> consultarpedidoFiltro(Integer id_usuario, String estado) throws PersistenciaException{
+        List<Pedido> lista = new ArrayList<>();
+        
+        String sql = "{call sp_consultar_pedidos_filtros(?, ?)}";
+
+        try (Connection con = this.conexionBD.crearConexion();
+             CallableStatement cs = con.prepareCall(sql)) {
+
+            // 1. Manejo del parámetro idUsuario
+            if (id_usuario != null) {
+                cs.setInt(1, id_usuario);
+            } else {
+                // Si es null, le avisamos a SQL explícitamente que es un NULL de tipo entero
+                cs.setNull(1, java.sql.Types.INTEGER);
+            }
+
+            // 2. Manejo del parámetro estado
+            if (estado != null && !estado.trim().isEmpty()) {
+                cs.setString(2, estado);
+            } else {
+                // Si es null o vacío, mandamos NULL de tipo VARCHAR/ENUM
+                cs.setNull(2, java.sql.Types.VARCHAR);
+            }
+
+            // 3. Ejecutar y mapear resultados
+            try (ResultSet rs = cs.executeQuery()) {
+                while (rs.next()) {
+                    Pedido p = new Pedido();
+
+                    // Mapeo manual campo por campo
+                    p.setIdPedido(rs.getInt("id_pedido"));
+                    p.setMetodo_pago(rs.getString("metodo_pago"));
+                    p.setTotal(rs.getDouble("total"));
+                    p.setTotalDCTO(rs.getDouble("totalDCTO"));
+                    p.setTipo(rs.getString("tipo"));
+                    p.setEstado(rs.getString("estado"));
+                    p.setIdUsuario(rs.getInt("id_usuario"));
+
+                    // Manejo de fechas
+                    Date fentrega = rs.getDate("fechaHora_entrega");
+                    if (fentrega != null) {
+                        p.setFechaHora_entrega(fentrega.toLocalDate());
+                    }
+
+                    Date felab = rs.getDate("fechaHora_elaboracion");
+                    if (felab != null) {
+                        p.setFechaHora_elaboracion(felab.toLocalDate());
+                    }
+
+                    lista.add(p);
+                }
+            }
+
+        } catch (SQLException ex) {
+            // Log para depuración
+            System.err.println("Error al llamar sp_consultar_pedidos_filtros: " + ex.getMessage());
+            throw new PersistenciaException("No se pudieron obtener los pedidos filtrados.");
+        }
+        return lista;
+    }
+    
 } 

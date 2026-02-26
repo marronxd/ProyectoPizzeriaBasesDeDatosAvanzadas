@@ -7,13 +7,11 @@ package Negocio.BO;
 import Negocio.DTO.DetallePizzaNuevoDTO;
 import Negocio.DTO.PedidoNuevoDTO;
 import Negocio.Excepciones.NegocioException;
-import Persistencia.DAO.CuponDAO;
 import Persistencia.DAO.ICuponDAO;
 import Persistencia.DAO.IPedidoDAO;
 import Persistencia.Dominio.Cupon;
 import Persistencia.Dominio.DetallesPizza;
 import Persistencia.Dominio.Pedido;
-import Persistencia.Dominio.PedidoProgramado;
 import Seguridad.Encriptar;
 import java.util.ArrayList;
 import java.util.List;
@@ -301,5 +299,35 @@ public class PedidoBO implements IPedidoBO{
         }
         
         return true;
+    }
+     /**
+     * Metodo que valida las entradas antes de enviar al dao
+     * @param id_usuario
+     * @param estado
+     * @return
+     * @throws NegocioException 
+     */
+    public List<Pedido> consultarpedidoFiltro(Integer id_usuario, String estado) throws NegocioException{
+        
+        // validaciones null (sí, las genere pq el tiempo se acaba)
+        if (id_usuario == null && (estado == null || estado.trim().isEmpty())) {
+            Log.warning("error de operacion con la busqueda");
+            throw new NegocioException("Entradas invalidas");
+        }
+
+        try {
+            // 2. Llamada al DAO
+            List<Pedido> pedidos = pedidoDAO.consultarpedidoFiltro(id_usuario, estado);
+
+            if (pedidos.isEmpty()) {
+                throw new NegocioException("No se encontraron pedidos con los filtros aplicados.");
+            }
+
+            return pedidos;
+
+        } catch (PersistenciaException e) {
+            //Atrapamos el error de SQL y relanzamos
+            throw new NegocioException("Error al procesar la consulta de pedidos: " + e.getMessage());
+        }
     }
 }

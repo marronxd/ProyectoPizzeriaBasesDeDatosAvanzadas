@@ -54,4 +54,13 @@ public interface IPedidoDAO {
      * @throws PersistenciaException 
      */
     public PedidoNuevoDTO consultarExpress(Integer idPedido) throws PersistenciaException;
+    
+    /**
+     * Metodo que filtra por id_usuario, por pedido o por ambos
+     * @param id_usuario 
+     * @param estado 
+     * @return la lista de coincidencias
+     * @throws PersistenciaException 
+     */
+    public List<Pedido> consultarpedidoFiltro(Integer id_usuario, String estado) throws PersistenciaException;
 }

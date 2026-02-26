@@ -8,6 +8,7 @@ import Negocio.DTO.DetallePizzaNuevoDTO;
 import Negocio.DTO.PedidoNuevoDTO;
 import Negocio.Excepciones.NegocioException;
 import Persistencia.Dominio.Pedido;
+import java.util.List;
 
 /**
  * Es la interfaz que se usa para inyectar dependencia en otras capas sin tener que involucarlas
@@ -37,10 +38,21 @@ public interface IPedidoBO {
      */
     public boolean agregarPedidoCompleto(PedidoNuevoDTO pedidoNuevo) throws NegocioException;
     /**
-     * Método que cambia el estado de los pedidos express con el pin que recibe
+     * Método que cambia el estado de los pedidos express con el pin que recibe.
+     * valida antes de enviar al dao
      * @param idPedido el id asociado a ese pedido express
      * @param pin es que introduce el usuario
      * @throws NegocioException si ocurre algun movimiento inesperado
      */
     public void cambiarEstadoExpress(Integer id_pedido, Integer pin) throws NegocioException;
+    
+    /**
+     * Metodo que valida las entradas antes de enviar al dao
+     * @param id_usuario
+     * @param estado
+     * @return
+     * @throws NegocioException 
+     */
+    public List<Pedido> consultarpedidoFiltro(Integer id_usuario, String estado) throws NegocioException;
+    
 }
