@@ -29,7 +29,7 @@ create table domicilios_clientes (
 
 create table clientes(
 	id_usuario int primary key,
-    estado enum("activo", "inactivo") default "activo",
+    estado enum("Activo", "Inactivo") default "activo",
     correo varchar(100) not null,
     fecha_nacimiento date not null,
 );
@@ -61,7 +61,7 @@ create table pedidos(
     estado enum("Listo","No reclamado", "Entregado", "Cancelado", "Pendiente", "No entregado") not null default "Pendiente",
     fechaHora_entrega date null,
     fechaHora_elaboracion date not null,
-    id_usuario int null,
+	id_usuario int null,
     foreign key (id_usuario) references clientes(id_usuario)
     on delete cascade
     on update cascade
